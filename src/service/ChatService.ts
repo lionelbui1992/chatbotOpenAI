@@ -7,6 +7,7 @@ import {ChatSettings} from "../models/ChatSettings";
 import {CHAT_STREAM_DEBOUNCE_TIME, DEFAULT_MODEL} from "../constants/appConstants";
 import {NotificationService} from '../service/NotificationService';
 import { FileData, FileDataRef } from "../models/FileData";
+import axios from 'axios';
 
 interface CompletionChunk {
   id: string;
@@ -297,18 +298,22 @@ export class ChatService {
     if (this.models !== null) {
       return Promise.resolve(this.models);
     }
-    this.models = fetch(MODELS_ENDPOINT, {
+    this.models = axios.get(MODELS_ENDPOINT, {
       headers: {
         'Authorization': `Bearer ${OPENAI_API_KEY}`,
       },
     })
         .then(response => {
-          if (!response.ok) {
-            return response.json().then(err => {
-              throw new Error(err.error.message);
-            });
+          if (!response.data) {
+            throw new Error('Failed to fetch models');
           }
-          return response.json();
+          return response.data;
+          // if (!response.ok) {
+          //   return response.json().then(err => {
+          //     throw new Error(err.error.message);
+          //   });
+          // }
+          // return response.json();
         })
         .catch(err => {
           throw new Error(err.message || err);
