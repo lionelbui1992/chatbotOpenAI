@@ -121,7 +121,7 @@ export class ChatService {
     let endpoint = CHAT_COMPLETIONS_ENDPOINT;
     let headers = {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${OPENAI_API_KEY}`
+      // "Authorization": `Bearer ${OPENAI_API_KEY}`
     };
 
     const requestBody: ChatCompletionRequest = {
@@ -145,7 +145,7 @@ export class ChatService {
     try {
       response = await fetch(endpoint, {
         method: "POST",
-        headers: headers,
+        // headers: headers,
         body: JSON.stringify(requestBody),
         signal: this.abortController.signal
       });
@@ -298,11 +298,7 @@ export class ChatService {
     if (this.models !== null) {
       return Promise.resolve(this.models);
     }
-    this.models = axios.get(MODELS_ENDPOINT, {
-      headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
-      },
-    })
+    this.models = axios.get(MODELS_ENDPOINT)
         .then(response => {
           if (!response.data) {
             throw new Error('Failed to fetch models');
@@ -319,10 +315,11 @@ export class ChatService {
           throw new Error(err.message || err);
         })
         .then(data => {
-          const models: OpenAIModel[] = data.data;
+          // const models: OpenAIModel[] = data.data;
+          const models: OpenAIModel[] = data;
           // Filter, enrich with contextWindow from the imported constant, and sort
           return models
-              .filter(model => model.id.startsWith("gpt-"))
+              // .filter(model => model.id.startsWith("gpt-"))
               .map(model => {
                 const details = modelDetails[model.id] || {
                   contextWindowSize: 0,
