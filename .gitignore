@@ -15,7 +15,7 @@
 .idea
 
 # local env
-local.env.json
+# local.env.json
 
 # misc
 .DS_Store
