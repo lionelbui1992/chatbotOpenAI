@@ -7,7 +7,6 @@ import {ChatSettings} from "../models/ChatSettings";
 import {CHAT_STREAM_DEBOUNCE_TIME, DEFAULT_MODEL} from "../constants/appConstants";
 import {NotificationService} from '../service/NotificationService';
 import { FileData, FileDataRef } from "../models/FileData";
-import axios from 'axios';
 
 interface CompletionChunk {
   id: string;
@@ -68,7 +67,7 @@ export class ChatService {
     let endpoint = CHAT_COMPLETIONS_ENDPOINT;
     let headers = {
       "Content-Type": "application/json",
-      // "Authorization": `Bearer ${OPENAI_API_KEY}`
+      "Authorization": `Bearer ${OPENAI_API_KEY}`
     };
 
     const mappedMessages = await ChatService.mapChatMessagesToCompletionMessages(modelId,messages);
@@ -121,13 +120,13 @@ export class ChatService {
     let endpoint = CHAT_COMPLETIONS_ENDPOINT;
     let headers = {
       "Content-Type": "application/json",
-      // "Authorization": `Bearer ${OPENAI_API_KEY}`
+      "Authorization": `Bearer ${OPENAI_API_KEY}`
     };
 
     const requestBody: ChatCompletionRequest = {
       model: DEFAULT_MODEL,
       messages: [],
-      stream: true,
+      stream: false,
     };
 
     if (chatSettings) {
@@ -144,10 +143,21 @@ export class ChatService {
     let response: Response;
     try {
       response = await fetch(endpoint, {
-        method: "GET",
-        // headers: headers,
+        method: "POST",
+        headers: headers,
         body: JSON.stringify(requestBody),
-        signal: this.abortController.signal
+        // signal: this.abortController.signal
+      }).then(response => {
+        console.log(response);
+        if (!response.ok) {
+          return response.json().then(err => {
+            throw new Error(err.error.message);
+          });
+        }
+        return response;
+      }).then(response => {
+        console.log(response);
+        return response;
       });
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {
@@ -159,6 +169,8 @@ export class ChatService {
       }
       return;
     }
+
+    console.log(response);
 
     if (!response.ok) {
       const err = await response.json();
@@ -298,30 +310,29 @@ export class ChatService {
     if (this.models !== null) {
       return Promise.resolve(this.models);
     }
-    this.models = axios.get(MODELS_ENDPOINT, 
-      // { headers: { "Content-Type": "application/json", "Authorization": `Bearer ${OPENAI_API_KEY}` } }
-    )
+    this.models = fetch(MODELS_ENDPOINT, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${OPENAI_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+    })
         .then(response => {
-          if (!response.data) {
-            throw new Error('Failed to fetch models');
+          if (!response.ok) {
+            return response.json().then(err => {
+              throw new Error(err.error.message);
+            });
           }
-          return response.data;
-          // if (!response.ok) {
-          //   return response.json().then(err => {
-          //     throw new Error(err.error.message);
-          //   });
-          // }
-          // return response.json();
+          return response.json();
         })
         .catch(err => {
           throw new Error(err.message || err);
         })
         .then(data => {
-          // const models: OpenAIModel[] = data.data;
-          const models: OpenAIModel[] = data;
+          const models: OpenAIModel[] = data.data;
           // Filter, enrich with contextWindow from the imported constant, and sort
           return models
-              // .filter(model => model.id.startsWith("gpt-"))
+              .filter(model => model.id.startsWith("gpt-"))
               .map(model => {
                 const details = modelDetails[model.id] || {
                   contextWindowSize: 0,
