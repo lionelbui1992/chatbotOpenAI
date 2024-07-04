@@ -126,7 +126,7 @@ export class ChatService {
     const requestBody: ChatCompletionRequest = {
       model: DEFAULT_MODEL,
       messages: [],
-      stream: false,
+      stream: true,
     };
 
     if (chatSettings) {
@@ -146,18 +146,8 @@ export class ChatService {
         method: "POST",
         headers: headers,
         body: JSON.stringify(requestBody),
-        // signal: this.abortController.signal
-      }).then(response => {
         console.log(response);
-        if (!response.ok) {
-          return response.json().then(err => {
-            throw new Error(err.error.message);
-          });
-        }
-        return response;
-      }).then(response => {
-        console.log(response);
-        return response;
+        signal: this.abortController.signal
       });
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {
@@ -169,8 +159,6 @@ export class ChatService {
       }
       return;
     }
-
-    console.log(response);
 
     if (!response.ok) {
       const err = await response.json();
@@ -311,10 +299,8 @@ export class ChatService {
       return Promise.resolve(this.models);
     }
     this.models = fetch(MODELS_ENDPOINT, {
-      method: 'GET',
       headers: {
         'Authorization': `Bearer ${OPENAI_API_KEY}`,
-        'Content-Type': 'application/json',
       },
     })
         .then(response => {
