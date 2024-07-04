@@ -146,7 +146,6 @@ export class ChatService {
         method: "POST",
         headers: headers,
         body: JSON.stringify(requestBody),
-        console.log(response);
         signal: this.abortController.signal
       });
     } catch (error) {
