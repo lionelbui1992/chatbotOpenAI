@@ -145,7 +145,7 @@ export class ChatService {
     try {
       response = await fetch(endpoint, {
         method: "POST",
-        // headers: headers,
+        headers: headers,
         body: JSON.stringify(requestBody),
         signal: this.abortController.signal
       });
@@ -298,7 +298,9 @@ export class ChatService {
     if (this.models !== null) {
       return Promise.resolve(this.models);
     }
-    this.models = axios.get(MODELS_ENDPOINT)
+    this.models = axios.get(MODELS_ENDPOINT, 
+      // { headers: { "Content-Type": "application/json", "Authorization": `Bearer ${OPENAI_API_KEY}` } }
+    )
         .then(response => {
           if (!response.data) {
             throw new Error('Failed to fetch models');
