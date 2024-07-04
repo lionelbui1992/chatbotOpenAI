@@ -68,7 +68,7 @@ export class ChatService {
     let endpoint = CHAT_COMPLETIONS_ENDPOINT;
     let headers = {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${OPENAI_API_KEY}`
+      // "Authorization": `Bearer ${OPENAI_API_KEY}`
     };
 
     const mappedMessages = await ChatService.mapChatMessagesToCompletionMessages(modelId,messages);
@@ -144,8 +144,8 @@ export class ChatService {
     let response: Response;
     try {
       response = await fetch(endpoint, {
-        method: "POST",
-        headers: headers,
+        method: "GET",
+        // headers: headers,
         body: JSON.stringify(requestBody),
         signal: this.abortController.signal
       });
