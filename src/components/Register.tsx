@@ -1,7 +1,8 @@
-import React, { useState, useEffect, FormEvent } from 'react';
+import React, { useState, useEffect, FormEvent, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Auth from '../service/Auth';
+import { UserContext } from '../UserContext';
 
 const Register: React.FC = () => {
   const [domain, setDomain] = useState<string>('');
@@ -9,6 +10,15 @@ const Register: React.FC = () => {
   const [password, setPassword] = useState<string>('');
   const [rePassword, setRePassword] = useState<string>('');
   const [passwordError, setPasswordError] = useState<string>('');
+
+  const {userSettings, setUserSettings} = useContext(UserContext);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // clear token in context
+    setUserSettings({...userSettings, token: undefined});
+   }, []);
 
   useEffect(() => {
     let errorString = '';
@@ -23,7 +33,6 @@ const Register: React.FC = () => {
     }
     setPasswordError(errorString);
   }, [password, rePassword]);
-  const navigate = useNavigate();
 
   const handleRegister = async (event: FormEvent) => {
     event.preventDefault();
@@ -34,6 +43,9 @@ const Register: React.FC = () => {
     }
     const user = await Auth.register(domain, email, password, rePassword);
     if (user) {
+      // update token to context
+      setUserSettings({...userSettings, token: user.token});
+
       // redirect to home page
       navigate('/');
     }
@@ -126,3 +138,7 @@ const Register: React.FC = () => {
 };
 
 export default Register;
+function setUserSettings(arg0: any) {
+  throw new Error('Function not implemented.');
+}
+

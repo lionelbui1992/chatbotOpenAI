@@ -1,9 +1,11 @@
+import { use } from 'i18next';
 import React, {createContext, ReactNode, useEffect, useState} from 'react';
 
 export type UserTheme = 'light' | 'dark' | 'system';
 export type Theme = 'light' | 'dark';
 
 interface UserSettings {
+  token?: string;
   userTheme: UserTheme;
   theme: Theme;
   model: string | null;
@@ -14,6 +16,7 @@ interface UserSettings {
 }
 
 const defaultUserSettings: UserSettings = {
+  token: undefined,
   userTheme: 'system',
   theme: 'light',
   model: null,
@@ -45,6 +48,9 @@ interface UserProviderProps {
 
 export const UserProvider = ({children}: UserProviderProps) => {
   const [userSettings, setUserSettings] = useState<UserSettings>(() => {
+    const storedToken = localStorage.getItem('userToken');
+    const token = storedToken ? storedToken : defaultUserSettings.token;
+
     const storedUserTheme = localStorage.getItem('theme');
     const userTheme: UserTheme = (storedUserTheme === 'light' || storedUserTheme === 'dark' || storedUserTheme === 'system') ? storedUserTheme : defaultUserSettings.userTheme;
 
@@ -59,6 +65,7 @@ export const UserProvider = ({children}: UserProviderProps) => {
     const effectiveTheme = determineEffectiveTheme(userTheme);
 
     return {
+      token,
       userTheme: userTheme,
       theme: effectiveTheme,
       model,
@@ -79,6 +86,14 @@ export const UserProvider = ({children}: UserProviderProps) => {
       mediaQuery.removeEventListener('change', mediaQueryChangeHandler);
     };
   }, []);
+
+  useEffect(() => {
+    if (userSettings.token === undefined) {
+      localStorage.removeItem('userToken');
+    } else {
+      localStorage.setItem('userToken', userSettings.token);
+    }
+  } , [userSettings.token]);
 
   useEffect(() => {
     localStorage.setItem('theme', userSettings.userTheme);

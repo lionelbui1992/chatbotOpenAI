@@ -1,8 +1,9 @@
 // In your Login component
-import React, { useState } from 'react';
+import React, { FormEvent, useContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import Auth from '../service/Auth';
+import { UserContext } from '../UserContext';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -10,7 +11,14 @@ const Login = () => {
 
   const navigate = useNavigate();
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+  const {userSettings, setUserSettings} = useContext(UserContext);
+
+  useEffect(() => {
+   // clear token in context
+   setUserSettings({...userSettings, token: undefined});
+  }, []);
+
+  const handleLogin = async (e: FormEvent) => {
     e.preventDefault(); // Prevent the form from refreshing the page
     // validate data
     if (!email || !password) {
@@ -19,6 +27,9 @@ const Login = () => {
     }
     let user = await Auth.login(email, password);
     if (user) {
+      // update token to context
+      setUserSettings({...userSettings, token: user.token});
+
       // redirect to home page
       navigate('/');
     }

@@ -8,6 +8,7 @@ import './App.css';
 import {ToastContainer} from "react-toastify";
 import ExploreCustomChats from "./components/ExploreCustomChats";
 import CustomChatEditor from './components/CustomChatEditor';
+import ProtectedRoute from './components/ProtectedRoute';
 import Login from './components/Login';
 import Register from './components/Register';
 
@@ -45,14 +46,14 @@ const App = () => {
               />
               <div className="flex-grow h-full overflow-hidden">
                 <Routes>
-                  <Route path="/" element={<MainPageWithProps/>}/>
-                  <Route path="/c/:id" element={<MainPageWithProps/>}/>
-                  <Route path="/explore" element={<ExploreCustomChats/>}/>
+                  <Route path="/" element={<ProtectedRoute><MainPageWithProps/></ProtectedRoute>}/>
+                  <Route path="/c/:id" element={<ProtectedRoute><MainPageWithProps/></ProtectedRoute>}/>
+                  <Route path="/explore" element={<ProtectedRoute><ExploreCustomChats/></ProtectedRoute>}/>
                   // Use the wrapper for new routes
-                  <Route path="/g/:gid" element={<MainPageWithProps/>}/>
-                  <Route path="/g/:gid/c/:id" element={<MainPageWithProps/>}/>
-                  <Route path="/custom/editor" element={<CustomChatEditor/>}/>
-                  <Route path="/custom/editor/:id" element={<CustomChatEditor/>}/>
+                  <Route path="/g/:gid" element={<ProtectedRoute><MainPageWithProps/></ProtectedRoute>}/>
+                  <Route path="/g/:gid/c/:id" element={<ProtectedRoute><MainPageWithProps/></ProtectedRoute>}/>
+                  <Route path="/custom/editor" element={<ProtectedRoute><CustomChatEditor/></ProtectedRoute>}/>
+                  <Route path="/custom/editor/:id" element={<ProtectedRoute><CustomChatEditor/></ProtectedRoute>}/>
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
                   <Route path="*" element={<Navigate to="/" replace/>}/>
