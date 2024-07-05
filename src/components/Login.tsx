@@ -10,10 +10,15 @@ const Login = () => {
 
   const navigate = useNavigate();
 
-  const handleLogin = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // Prevent the form from refreshing the page
+    // validate data
+    if (!email || !password) {
+      toast.error('Email and password are required');
+      return;
+    }
     try {
-      const response = await fetch(AUTH_ENDPOINT, {
+      const response = await fetch(`${AUTH_ENDPOINT}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -29,8 +34,6 @@ const Login = () => {
         // redirect to home page
         navigate('/');
       } else {
-        console.error('Login failed:', data.message);
-        // show toast
         toast.error(data.message);
       }
     } catch (error) {
@@ -39,15 +42,15 @@ const Login = () => {
   };
 
   return (
-    <form className="w-full max-w-xs">
+    <form className="w-full max-w-xs" onSubmit={handleLogin}>
       <div className="md:flex md:items-center mb-3">
         <div className="md:w-1/3">
-          <label className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" htmlFor="login-email">Email</label>
+          <label className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" htmlFor="user-email">Email</label>
         </div>
         <div className="md:w-2/3">
           <input
             className="flex-grow rounded-md border dark:text-gray-100 dark:bg-gray-850 dark:border-white/20 px-2 py-1"
-            id="login-email"
+            id="user-email"
             type="text"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -57,12 +60,12 @@ const Login = () => {
       </div>
       <div className="md:flex md:items-center mb-3">
         <div className="md:w-1/3">
-          <label className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" htmlFor="login-password">Password</label>
+          <label className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" htmlFor="user-password">Password</label>
         </div>
         <div className="md:w-2/3">
           <input
             className="flex-grow rounded-md border dark:text-gray-100 dark:bg-gray-850 dark:border-white/20 px-2 py-1"
-            id="login-password"
+            id="user-password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
