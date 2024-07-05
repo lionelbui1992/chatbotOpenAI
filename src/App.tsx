@@ -8,6 +8,8 @@ import './App.css';
 import {ToastContainer} from "react-toastify";
 import ExploreCustomChats from "./components/ExploreCustomChats";
 import CustomChatEditor from './components/CustomChatEditor';
+import Login from './components/Login';
+import Register from './components/Register';
 
 const App = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -51,6 +53,8 @@ const App = () => {
                   <Route path="/g/:gid/c/:id" element={<MainPageWithProps/>}/>
                   <Route path="/custom/editor" element={<CustomChatEditor/>}/>
                   <Route path="/custom/editor/:id" element={<CustomChatEditor/>}/>
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
                   <Route path="*" element={<Navigate to="/" replace/>}/>
                 </Routes>
               </div>
