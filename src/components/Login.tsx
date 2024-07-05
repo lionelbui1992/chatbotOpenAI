@@ -1,8 +1,8 @@
 // In your Login component
 import React, { useState } from 'react';
-import { AUTH_ENDPOINT } from '../constants/apiEndpoints';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import Auth from '../service/Auth';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -17,32 +17,16 @@ const Login = () => {
       toast.error('Email and password are required');
       return;
     }
-    try {
-      const response = await fetch(`${AUTH_ENDPOINT}/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await response.json();
-      if (response.status === 200) {
-        const { token, user } = data.data;
-        // Store the token in local storage or context
-        localStorage.setItem('userToken', token);
-        localStorage.setItem('userSettings', JSON.stringify(user.settings));
-        // redirect to home page
-        navigate('/');
-      } else {
-        toast.error(data.message);
-      }
-    } catch (error) {
-      toast.error('Login failed: ' + (error as Error).message);
+    let user = await Auth.login(email, password);
+    if (user) {
+      // redirect to home page
+      navigate('/');
     }
   };
 
   return (
     <form className="w-full max-w-xs" onSubmit={handleLogin}>
+      <div className="mb-4"></div>
       <div className="md:flex md:items-center mb-3">
         <div className="md:w-1/3">
           <label className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" htmlFor="user-email">Email</label>
@@ -82,11 +66,12 @@ const Login = () => {
           >Login</button>
         </div>
       </div>
+      <div className="mb-4">&nbsp;</div>
       <div className="md:flex md:items-center">
         <div className="md:w-1/3"></div>
         <div className="md:w-2/3">
           <p className="mt-2 text-gray-500 dark:text-gray-300">
-            <a href="/register">Register</a> or <a href="/forgot-password">Forgot password</a>
+            <a href="/register" onClick={(e) => {e.preventDefault(); navigate('/register');}}>Register</a> or <a href="/forgot-password" onClick={(e) => {e.preventDefault();navigate('/forgot-password');}}>Forgot password</a>
           </p>
         </div>
       </div>

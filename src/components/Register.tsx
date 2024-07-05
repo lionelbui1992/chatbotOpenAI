@@ -1,7 +1,7 @@
 import React, { useState, useEffect, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { AUTH_ENDPOINT } from '../constants/apiEndpoints';
+import Auth from '../service/Auth';
 
 const Register: React.FC = () => {
   const [domain, setDomain] = useState<string>('');
@@ -32,32 +32,16 @@ const Register: React.FC = () => {
       toast.error('Domain, email, password and re-password are required');
       return;
     }
-    try {
-      const response = await fetch(`${AUTH_ENDPOINT}/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ domain, email, password, re_password: rePassword }),
-      });
-      const data = await response.json();
-      if (response.status === 200) {
-        const { token, user } = data.data;
-        // Store the token in local storage or context
-        localStorage.setItem('userToken', token);
-        localStorage.setItem('userSettings', JSON.stringify(user.settings));
-        // redirect to home page
-        navigate('/');
-      } else {
-        toast.error(data.message);
-      }
-    } catch (error) {
-      toast.error('Register failed: ' + (error as Error).message);
+    const user = await Auth.register(domain, email, password, rePassword);
+    if (user) {
+      // redirect to home page
+      navigate('/');
     }
   };
 
   return (
     <form className="w-full max-w-xs" onSubmit={handleRegister}>
+      <div className="mb-4"></div>
       <div className="md:flex md:items-center mb-3">
         <div className="md:w-1/3">
           <label className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" htmlFor="user-domain">Domain</label>
