@@ -4,7 +4,8 @@ import {
   Cog6ToothIcon,
   DocumentTextIcon,
   SpeakerWaveIcon,
-  XMarkIcon
+  XMarkIcon,
+  GlobeAltIcon,
 } from "@heroicons/react/24/outline";
 import {Theme, UserContext} from '../UserContext';
 import ModelSelect from './ModelSelect';
@@ -21,6 +22,8 @@ import {useConfirmDialog} from './ConfirmDialog';
 import TextToSpeechButton from './TextToSpeechButton';
 import {DEFAULT_MODEL} from "../constants/appConstants";
 
+import useDrivePicker from 'react-google-drive-picker'
+
 interface UserSettingsModalProps {
   isVisible: boolean;
   onClose: () => void;
@@ -29,7 +32,7 @@ interface UserSettingsModalProps {
 enum Tab {
   GENERAL_TAB = "General",
   INSTRUCTIONS_TAB = "Instructions",
-  SPEECH_TAB = "Speech",
+  GOOGLE_TAB = "Google Connect",
   STORAGE_TAB = "Storage",
 }
 
@@ -49,6 +52,16 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({isVisible, onClose
   const {t} = useTranslation();
   const editableInstructionsRef = useRef<{ getCurrentValue: () => string }>(null);
   const [ttsText, setTtsText] = useState(SAMPLE_AUDIO_TEXT);
+
+  const [openPicker, authResponse] = useDrivePicker();
+  
+  const [authToken, setAuthToken] = useState("");
+
+  useEffect(() => {
+    if (authResponse) {
+      setAuthToken(authResponse.access_token);
+    }
+  }, [authResponse]);
 
   useEffect(() => {
     if (isVisible) {
@@ -132,6 +145,61 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({isVisible, onClose
 
   const renderStorageInfo = (value?: number | string) => value ?? t('non-applicable');
 
+  const handleOpenPicker = () => {
+    openPicker({
+      role: 'reader',
+      clientId: "124252875894-uiliht36jjfrf0hspqkkbmvbni89vo92.apps.googleusercontent.com",
+      developerKey: "AIzaSyDchMVX_jh-i9bq1cFTEcscLVd5lPDi6eY",
+      viewId: "SPREADSHEETS",
+      // token: token, // pass oauth token in case you already have one
+      token: authToken,
+      showUploadView: true,
+      showUploadFolders: true,
+      supportDrives: true,
+      multiselect: true,
+      // customViews: customViewsArray, // custom view
+      callbackFunction: (data) => {
+        //show data picker
+        console.log('data:', data);
+ 
+        if (data.action === 'loaded') {
+          console.log('Google Drive Picker loaded successfully')
+          console.log('authResponse:', authResponse);
+        }
+        if (data.action === 'picked') {
+          //console.log('User selected the following files:', data.docs)
+          const file = data.docs[0];
+          console.log('Selected file:', file);
+ 
+          //ermissions seclected file for user
+          const permission = {
+            role: 'reader',
+            type: 'user',
+            emailAddress: 'buiduyet.it@gmail.com'
+          };
+       
+ 
+          window.gapi.auth2.init({
+            client_id: "124252875894-uiliht36jjfrf0hspqkkbmvbni89vo92.apps.googleusercontent.com"
+          }).then(() => {
+            window.gapi.client.drive.permissions.create({
+              fileId: file.id,
+              resource: permission
+            }).then((res) => {
+              console.log('Permission created:', res);
+            }).catch((error) => {
+              console.log('Error creating permission:', error);
+            });
+          });
+        }
+        if (data.action === 'cancel') {
+          console.log('User clicked cancel/close button')
+        }
+        
+      },
+    })
+  }
+
   return (
       <Transition show={isVisible} as={React.Fragment}>
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 px-4">
@@ -169,9 +237,9 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({isVisible, onClose
                                       aria-hidden="true"/>{t('instructions-tab')}
                   </div>
                   <div
-                      className={`cursor-pointer p-4 flex items-center ${activeTab === Tab.SPEECH_TAB ? 'bg-gray-200 dark:bg-gray-700' : ''}`} // Added new Tab
-                      onClick={() => setActiveTab(Tab.SPEECH_TAB)}>
-                    <SpeakerWaveIcon className="w-4 h-4 mr-3" aria-hidden="true"/>{t('speech-tab')}
+                      className={`cursor-pointer p-4 flex items-center ${activeTab === Tab.GOOGLE_TAB ? 'bg-gray-200 dark:bg-gray-700' : ''}`} // Added new Tab
+                      onClick={() => setActiveTab(Tab.GOOGLE_TAB)}>
+                    <GlobeAltIcon className="w-4 h-4 mr-3" aria-hidden="true"/>GOOGLE
                   </div>
                   <div
                       className={`cursor-pointer p-4 flex items-center ${activeTab === Tab.STORAGE_TAB ? 'bg-gray-200 dark:bg-gray-700' : ''}`}
@@ -240,10 +308,13 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({isVisible, onClose
                       />
                     </div>
                   </div>
-                  <div className={`${activeTab === Tab.SPEECH_TAB ? 'flex flex-col flex-1' : 'hidden'}`}>
+                  <div className={`${activeTab === Tab.GOOGLE_TAB ? 'flex flex-col flex-1' : 'hidden'}`}>
                     <div className="flex flex-col flex-1">
                       <div className="setting-panel flex justify-between">
-                        <label htmlFor="speech-model">{t('model-header')}</label>
+                        <button
+                          className="rounded-md border dark:border-white/20 p-1 mr-2"
+                          onClick={() => handleOpenPicker()}>Select Google sheet</button>
+                        {/* <label htmlFor="speech-model">{t('model-header')}</label>
                         <select id="speech-model"
                                 className="custom-select dark:custom-select border-gray-300 border rounded p-2 dark:bg-gray-800 dark:text-white dark:border-gray-600"
                                 value={userSettings.speechModel || undefined}
@@ -253,9 +324,9 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({isVisible, onClose
                                 })}>
                           <option value="tts-1">tts-1</option>
                           <option value="tts-1-hd">tts-1-hd</option>
-                        </select>
+                        </select> */}
                       </div>
-                      <div className="setting-panel flex justify-between">
+                      {/* <div className="setting-panel flex justify-between">
                         <label htmlFor="voice">{t('voice-header')}</label>
                         <select id="voice"
                                 className="custom-select dark:custom-select border-gray-300 border rounded p-2 dark:bg-gray-800 dark:text-white dark:border-gray-600"
@@ -305,7 +376,7 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({isVisible, onClose
                           onChange={(e) => setTtsText(e.target.value)}
                         ></textarea>
                         <TextToSpeechButton content={ttsText}/>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                   <div className={`${activeTab === Tab.STORAGE_TAB ? 'flex flex-col flex-1' : 'hidden'}`}>

@@ -77,6 +77,7 @@
     "@types/react-syntax-highlighter": "^15.5.13",
     "@vitejs/plugin-react": "^4.3.1",
     "cypress": "^13.7.2",
+    "react-google-drive-picker": "^1.2.2",
     "vite": "^5.3.2",
     "vite-plugin-svgr": "^4.2.0",
     "vite-tsconfig-paths": "^4.3.2"
