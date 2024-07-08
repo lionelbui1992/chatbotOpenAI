@@ -147,7 +147,7 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({isVisible, onClose
 
   const handleOpenPicker = () => {
     openPicker({
-      role: 'reader',
+      // role: 'reader',
       clientId: "124252875894-uiliht36jjfrf0hspqkkbmvbni89vo92.apps.googleusercontent.com",
       developerKey: "AIzaSyDchMVX_jh-i9bq1cFTEcscLVd5lPDi6eY",
       viewId: "SPREADSHEETS",
@@ -179,18 +179,18 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({isVisible, onClose
           };
        
  
-          window.gapi.auth2.init({
-            client_id: "124252875894-uiliht36jjfrf0hspqkkbmvbni89vo92.apps.googleusercontent.com"
-          }).then(() => {
-            window.gapi.client.drive.permissions.create({
-              fileId: file.id,
-              resource: permission
-            }).then((res) => {
-              console.log('Permission created:', res);
-            }).catch((error) => {
-              console.log('Error creating permission:', error);
-            });
-          });
+          // window.gapi.auth2.init({
+          //   client_id: "124252875894-uiliht36jjfrf0hspqkkbmvbni89vo92.apps.googleusercontent.com"
+          // }).then(() => {
+          //   window.gapi.client.drive.permissions.create({
+          //     fileId: file.id,
+          //     resource: permission
+          //   }).then((res) => {
+          //     console.log('Permission created:', res);
+          //   }).catch((error) => {
+          //     console.log('Error creating permission:', error);
+          //   });
+          // });
         }
         if (data.action === 'cancel') {
           console.log('User clicked cancel/close button')

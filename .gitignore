@@ -29,3 +29,4 @@ yarn-debug.log*
 yarn-error.log*
 src/tailwind.css
 /frontend/node_modules
+src/local.env.json
