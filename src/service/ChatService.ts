@@ -7,6 +7,7 @@ import {ChatSettings} from "../models/ChatSettings";
 import {CHAT_STREAM_DEBOUNCE_TIME, DEFAULT_MODEL} from "../constants/appConstants";
 import {NotificationService} from '../service/NotificationService';
 import { FileData, FileDataRef } from "../models/FileData";
+import { UserSettings } from '../models/User';
 
 interface CompletionChunk {
   id: string;
@@ -298,9 +299,9 @@ export class ChatService {
       return Promise.resolve(this.models);
     }
     this.models = fetch(MODELS_ENDPOINT, {
-      headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
-      },
+      // headers: {
+      //   'Authorization': `Bearer ${OPENAI_API_KEY}`,
+      // },
     })
         .then(response => {
           if (!response.ok) {

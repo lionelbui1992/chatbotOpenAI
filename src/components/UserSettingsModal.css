@@ -7,3 +7,18 @@
 .setting-panel:last-child {
   border-bottom: none;
 }
+.svg-color-1 {
+  fill:#12B347;
+}
+
+.svg-color-2 {
+  fill:#0F993E;
+}
+
+.svg-color-3 {
+  fill:#E6F3FF;
+}
+
+.svg-color-white {
+  fill: #fff;
+}

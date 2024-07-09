@@ -1,29 +1,27 @@
 import { use } from 'i18next';
 import React, {createContext, ReactNode, useEffect, useState} from 'react';
+import { UserSettings } from './models/User';
 
 export type UserTheme = 'light' | 'dark' | 'system';
 export type Theme = 'light' | 'dark';
 
-interface UserSettings {
-  token?: string;
-  userTheme: UserTheme;
-  theme: Theme;
-  model: string | null;
-  instructions: string;
-  speechModel: string | null;
-  speechVoice: string | null;
-  speechSpeed: number | null;
-}
-
 const defaultUserSettings: UserSettings = {
   token: undefined,
+  user_id: null,
+  domain: '',
+  email: '',
+  name: '',
   userTheme: 'system',
   theme: 'light',
   model: null,
   instructions: '',
   speechModel: 'tts-1',
   speechVoice: 'echo',
-  speechSpeed: 1.0
+  speechSpeed: 1.0,
+  googleAccessToken: "",
+  sheetName: "",
+  spreadsheetID: "",
+  tags: [],
 };
 
 const determineEffectiveTheme = (userTheme: UserTheme): Theme => {
@@ -50,6 +48,10 @@ export const UserProvider = ({children}: UserProviderProps) => {
   const [userSettings, setUserSettings] = useState<UserSettings>(() => {
     const storedToken = localStorage.getItem('userToken');
     const token = storedToken ? storedToken : defaultUserSettings.token;
+    const user_id = localStorage.getItem('user_id') || defaultUserSettings.user_id;
+    const domain = localStorage.getItem('userDomain') || defaultUserSettings.domain;
+    const email = localStorage.getItem('userEmail') || defaultUserSettings.email;
+    const name = localStorage.getItem('userName') || defaultUserSettings.name;
 
     const storedUserTheme = localStorage.getItem('theme');
     const userTheme: UserTheme = (storedUserTheme === 'light' || storedUserTheme === 'dark' || storedUserTheme === 'system') ? storedUserTheme : defaultUserSettings.userTheme;
@@ -64,15 +66,28 @@ export const UserProvider = ({children}: UserProviderProps) => {
 
     const effectiveTheme = determineEffectiveTheme(userTheme);
 
+    const googleAccessToken = localStorage.getItem('googleAccessToken') || defaultUserSettings.googleAccessToken;
+    const sheetName = localStorage.getItem('sheetName') || defaultUserSettings.sheetName;
+    const spreadsheetID = localStorage.getItem('spreadsheetID') || defaultUserSettings.spreadsheetID;
+    const tags = localStorage.getItem('tag')?.split(',') || defaultUserSettings.tags;
+
     return {
       token,
+      user_id,
+      domain,
+      email,
+      name,
       userTheme: userTheme,
       theme: effectiveTheme,
       model,
       instructions,
       speechModel,
       speechVoice,
-      speechSpeed
+      speechSpeed,
+      googleAccessToken,
+      sheetName,
+      spreadsheetID,
+      tags,
     };
   });
 
@@ -171,6 +186,38 @@ export const UserProvider = ({children}: UserProviderProps) => {
       localStorage.setItem('defaultSpeechSpeed', String(userSettings.speechSpeed));
     }
   }, [userSettings.speechSpeed]);
+
+  useEffect(() => {
+    if (userSettings.googleAccessToken === null || userSettings.googleAccessToken === undefined) {
+      localStorage.removeItem('googleAccessToken');
+    } else {
+      localStorage.setItem('googleAccessToken', userSettings.googleAccessToken);
+    }
+  }, [userSettings.googleAccessToken]);
+
+  useEffect(() => {
+    if (userSettings.sheetName === null || userSettings.sheetName === undefined) {
+      localStorage.removeItem('sheetName');
+    } else {
+      localStorage.setItem('sheetName', userSettings.sheetName);
+    }
+  }, [userSettings.sheetName]);
+
+  useEffect(() => {
+    if (userSettings.spreadsheetID === null || userSettings.spreadsheetID === undefined) {
+      localStorage.removeItem('spreadsheetID');
+    } else {
+      localStorage.setItem('spreadsheetID', userSettings.spreadsheetID);
+    }
+  }, [userSettings.spreadsheetID]);
+
+  useEffect(() => {
+    if (userSettings.tags === null || userSettings.tags === undefined) {
+      localStorage.removeItem('tag');
+    } else {
+      localStorage.setItem('tag', userSettings.tags.join(','));
+    }
+  }, [userSettings.tags]);
 
   return (
       <UserContext.Provider value={{userSettings, setUserSettings}}>

@@ -1,18 +1,20 @@
+import { Theme, UserTheme } from "../UserContext";
+
 class User {
-    id: number;
+    id: string;
     domain: string;
     email: string;
     name: string;
     token: string;
-    settings?: object;
+    settings: UserSettings;
 
     constructor(
-        id: number,
+        id: string,
         domain: string,
         email: string,
         name: string,
         token: string,
-        settings?: object
+        settings: UserSettings
     ) {
         this.id = id;
         this.domain = domain;
@@ -23,17 +25,24 @@ class User {
     }
 }
 
-class UserSettings {
-    sheet_name?: string;
-    spreadsheet_id?: string;
-    tag?: string[];
-
-    constructor(sheet_name?: string, spreadsheet_id?: string, tag?: string[]) {
-        this.sheet_name = sheet_name;
-        this.spreadsheet_id = spreadsheet_id;
-        this.tag = tag;
-    }
+interface UserSettings {
+    token?: string;
+    user_id: string | null;
+    domain: string;
+    email: string;
+    name: string;
+    userTheme: UserTheme;
+    theme: Theme;
+    model: string | null;
+    instructions: string;
+    speechModel: string;
+    speechVoice: string;
+    speechSpeed: number;
+    googleAccessToken: string;
+    sheetName: string;
+    spreadsheetID: string;
+    tags: string[] | null;
 }
 
 export default User;
-export { UserSettings };
+export type { UserSettings };

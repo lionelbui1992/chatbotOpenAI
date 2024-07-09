@@ -1,6 +1,6 @@
 import { AUTH_ENDPOINT } from '../constants/apiEndpoints';
 import { toast } from 'react-toastify';
-import User, { UserSettings } from '../models/User';
+import User from '../models/User';
 
 class Auth {
     static async register(domain: string, email: string, password: string, rePassword: string): Promise<User | null> {
@@ -15,7 +15,7 @@ class Auth {
         if (response.status === 200) {
             const { token, user } = data.data;
             localStorage.setItem('userSettings', JSON.stringify(user.settings));
-            return new User(user.id, user.domain, user.email, user.name, token, new UserSettings(user.settings.sheet_name, user.settings.spreadsheet_id, user.settings.tag));
+            return new User(user.id, user.domain, user.email, user.name, token, user.settings);
         } else {
             toast.error(data.message);
             return null;
@@ -34,7 +34,7 @@ class Auth {
         if (response.status === 200) {
             const { token, user } = data.data;
             localStorage.setItem('userSettings', JSON.stringify(user.settings));
-            return new User(user.id, user.domain, user.email, user.name, token, new UserSettings(user.settings.sheet_name, user.settings.spreadsheet_id, user.settings.tag));
+            return new User(user.id, user.domain, user.email, user.name, token, user.settings);
         } else {
             toast.error(data.message);
             return null;

@@ -44,7 +44,25 @@ const Register: React.FC = () => {
     const user = await Auth.register(domain, email, password, rePassword);
     if (user) {
       // update token to context
-      setUserSettings({...userSettings, token: user.token});
+      setUserSettings({
+        ...userSettings,
+        token: user.token,
+        user_id: user.id,
+        domain: user.domain,
+        email: user.email,
+        name: user.name,
+        userTheme: user.settings.userTheme,
+        theme: user.settings.theme,
+        model: user.settings.model,
+        instructions: user.settings.instructions,
+        speechModel: user.settings.speechModel,
+        speechVoice: user.settings.speechVoice,
+        speechSpeed: user.settings.speechSpeed,
+        googleAccessToken: user.settings.googleAccessToken,
+        sheetName: user.settings.sheetName,
+        spreadsheetID: user.settings.spreadsheetID,
+        tags: user.settings.tags,
+      });
 
       // redirect to home page
       navigate('/');
