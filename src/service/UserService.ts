@@ -1,5 +1,5 @@
 import { USER_ENDPOINT } from "../constants/apiEndpoints";
-import { UserSettings } from '../models/User';
+import { GoogleSelectedDetails, UserSettings } from '../models/User';
 
 class UserService {
     static async getSettings(token: string): Promise<UserSettings | null> {
@@ -24,6 +24,20 @@ class UserService {
                 'Authorization': `Bearer ${userSettings.token}`,
             },
             body: JSON.stringify(userSettings),
+        });
+    }
+
+    static async updateGoogleSettings(token: string, googleAccessToken: string, googleSelectedDetails: GoogleSelectedDetails[]): Promise<Response> {
+        return await fetch(USER_ENDPOINT + '/google', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+                googleAccessToken,
+                googleSelectedDetails,
+            }),
         });
     }
 }

@@ -283,20 +283,22 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({isVisible, onClose
     // update user settings in context
     setUserSettings({...userSettings, googleAccessToken: authToken, googleSelectedDetails: selectedDetails});
     // update google access token in backend
-    UserService.updateSettings({...userSettings, googleAccessToken: authToken, googleSelectedDetails: selectedDetails})
-      .then((response) => {
-        if (response.status === 200) {
-          NotificationService.handleSuccess("Google access token has been successfully updated.");
-        } else {
-          NotificationService.handleUnexpectedError(new Error('An unknown error occurred'), "Failed to update google access token");
-        }
-      }).catch((error) => {
-        if (error instanceof Error) {
-          NotificationService.handleUnexpectedError(error, "Failed to update google access token");
-        } else {
-          NotificationService.handleUnexpectedError(new Error('An unknown error occurred'), "Failed to update google access token");
-        }
-      });
+    if (userSettings.token) {
+      UserService.updateGoogleSettings(userSettings.token, authToken, selectedDetails)
+        .then((response) => {
+          if (response.status === 200) {
+            NotificationService.handleSuccess("Google access token has been successfully updated.");
+          } else {
+            NotificationService.handleUnexpectedError(new Error('An unknown error occurred'), "Failed to update google access token");
+          }
+        }).catch((error) => {
+          if (error instanceof Error) {
+            NotificationService.handleUnexpectedError(error, "Failed to update google access token");
+          } else {
+            NotificationService.handleUnexpectedError(new Error('An unknown error occurred'), "Failed to update google access token");
+          }
+        });
+      }
   };
 
   const filteredSheets = sheets.filter((sheet: GoogleSheetInfo) => {
