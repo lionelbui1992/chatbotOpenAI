@@ -25,6 +25,13 @@ class User {
     }
 }
 
+interface GoogleSelectedDetails {
+    id: string;
+    sheetId: string;
+    sheetName: string;
+    title: string;
+}
+
 interface UserSettings {
     token?: string;
     user_id: string | null;
@@ -39,8 +46,7 @@ interface UserSettings {
     speechVoice: string;
     speechSpeed: number;
     googleAccessToken: string;
-    sheetName: string;
-    spreadsheetID: string;
+    googleSelectedDetails: GoogleSelectedDetails[];
     tags: string[] | null;
 }
 

@@ -24,10 +24,48 @@ import {DEFAULT_MODEL} from "../constants/appConstants";
 import UserService from "../service/UserService"; // Add this line to import UserService
 
 import useDrivePicker from 'react-google-drive-picker'
+import { gapi } from 'gapi-script';
 
 interface UserSettingsModalProps {
   isVisible: boolean;
   onClose: () => void;
+}
+
+declare global {
+  interface Window {
+    gapi: any;
+  }
+}
+
+interface GoogleSheet {
+  id: string;
+  name: string;
+  title: string;
+}
+
+interface GoogleSheetInfo {
+  id: string;
+  name: string;
+}
+
+interface GoogleSheetInfo2 {
+  id: string;
+  title: string;
+}
+
+
+interface googleSelectedDetails {
+  id: string;
+  sheetId: string;
+  sheetName: string;
+  title: string;
+}
+
+interface GoogleSheetDetail {
+  properties: {
+    sheetId: number;
+    title: string;
+  };
 }
 
 enum Tab {
@@ -56,6 +94,14 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({isVisible, onClose
 
   const [openPicker, authResponse] = useDrivePicker();
   
+
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [sheets, setSheets] = useState<GoogleSheet[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedSheetId, setSelectedSheetId] = useState('');
+  const [selectedSheetName, setSelectedSheetName] = useState('');
+  const [sheetDetails, setSheetDetails] = useState([]);
+  const [selectedDetails, setSelectedDetails] = useState<googleSelectedDetails[]>([]);
   const [authToken, setAuthToken] = useState(userSettings.googleAccessToken);
 
   useEffect(() => {
@@ -157,13 +203,113 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({isVisible, onClose
         if (typeof usage !== 'undefined' && typeof quota !== 'undefined') {
           setPercentageUsed(((usage / quota) * 100));
         }
-      }).catch(error => {
+      }).catch((error: Error) => {
         console.error('Error getting storage estimate:', error);
       });
     } else {
       console.log('Storage Estimation API is not supported in this browser.');
     }
+    function start() {
+      gapi.client.init({
+        apiKey: GOOGLE_DEVELOPER_KEY,
+        clientId: GOOGLE_CLIENT_ID,
+        discoveryDocs: [
+          'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest',
+          'https://sheets.googleapis.com/$discovery/rest?version=v4'
+        ],
+        scope: 'https://www.googleapis.com/auth/drive.metadata.readonly https://www.googleapis.com/auth/spreadsheets.readonly',
+      }).then(() => {
+        gapi.auth2.getAuthInstance().isSignedIn.listen(setIsSignedIn);
+        setIsSignedIn(gapi.auth2.getAuthInstance().isSignedIn.get());
+
+        if (gapi.auth2.getAuthInstance().isSignedIn.get()) {
+          setAuthToken(gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token);
+        }
+      }).catch((error: Error) => {
+        console.error('Error initializing gapi client:', error);
+      });
+    }
+
+    gapi.load('client:auth2', start);
   }, []);
+
+  const handleSignInClick = () => {
+    gapi.auth2.getAuthInstance().signIn().then(() => {
+      setAuthToken(gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token);
+    });
+  };
+
+  const handleSignOutClick = () => {
+    gapi.auth2.getAuthInstance().signOut();
+    setAuthToken('');
+  };
+
+  const listSheets = () => {
+    gapi.client.drive.files.list({
+      'q': "mimeType='application/vnd.google-apps.spreadsheet'",
+      'fields': 'files(id, name)',
+    }).then((response: any) => {
+      setSheets(response.result.files);
+    }).catch((error: Error) => {
+      console.error('Error listing sheets:', error);
+    });
+  };
+
+  const listSheetDetails = (sheetId: string) => {
+    gapi.client.sheets.spreadsheets.get({
+      spreadsheetId: sheetId,
+    }).then((response: any) => {
+      const sheetsData = response.result.sheets.map((sheet: GoogleSheetDetail) => ({ id: sheet.properties.sheetId, title: sheet.properties.title }));
+      setSheetDetails(sheetsData);
+    }).catch((error: Error) => {
+      console.error('Error getting sheet details:', error);
+    });
+  };
+
+  useEffect(() => {
+    if (isSignedIn) {
+      listSheets();
+    }
+  }, [isSignedIn]);
+
+  const handleSheetClick = (sheetId: string, sheetName: string) => {
+    setSelectedSheetId(sheetId);
+    setSelectedSheetName(sheetName);
+    listSheetDetails(sheetId);
+  };
+
+  const handleDetailClick = (detail: GoogleSheetInfo2) => {
+    setSelectedDetails((prevDetails) =>
+      prevDetails.some(d => d.id === detail.id)
+        ? prevDetails.filter(d => d.id !== detail.id)
+        : [...prevDetails, { ...detail, sheetName: selectedSheetName, sheetId: selectedSheetId }]
+    );
+  };
+
+  const handleSaveGoogleInfo = () => {
+    // update user settings in context
+    setUserSettings({...userSettings, googleAccessToken: authToken, googleSelectedDetails: selectedDetails});
+    // update google access token in backend
+    UserService.updateSettings(userSettings)
+      .then((response) => {
+        if (response.status === 200) {
+          NotificationService.handleSuccess("Google access token has been successfully updated.");
+        } else {
+          NotificationService.handleUnexpectedError(new Error('An unknown error occurred'), "Failed to update google access token");
+        }
+      }).catch((error) => {
+        if (error instanceof Error) {
+          NotificationService.handleUnexpectedError(error, "Failed to update google access token");
+        } else {
+          NotificationService.handleUnexpectedError(new Error('An unknown error occurred'), "Failed to update google access token");
+        }
+      });
+  };
+
+  const filteredSheets = sheets.filter((sheet: GoogleSheetInfo) => {
+    return sheet.name.toLowerCase().includes(searchQuery.toLowerCase());
+  }
+  );
 
   const renderStorageInfo = (value?: number | string) => value ?? t('non-applicable');
 
@@ -208,9 +354,9 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({isVisible, onClose
               window.gapi.client.drive.permissions.create({
                 fileId: file.id,
                 resource: permission
-              }).then((res) => {
+              }).then((res: any) => {
                 console.log('Permission created:', res);
-              }).catch((error) => {
+              }).catch((error: Error) => {
                 console.log('Error creating permission:', error);
               });
             });
@@ -359,6 +505,70 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({isVisible, onClose
                           <option value="tts-1">tts-1</option>
                           <option value="tts-1-hd">tts-1-hd</option>
                         </select> */}
+                      </div>
+                      <div className="setting-panel flex justify-between">
+                        {isSignedIn ? (
+                          <div className="flex flex-row flex-1 justify-between">
+                            <button onClick={handleSignOutClick} className="py-2 px-4 bg-red-500 text-white rounded hover:bg-red-700">Sign Out</button>
+                            <button onClick={handleSaveGoogleInfo} className="rounded-md border dark:border-white/20 py-2 px-4">Save</button>
+                          </div>
+                        ) : (
+                          <button onClick={handleSignInClick}>Sign In</button>
+                        )}
+                      </div>
+                      <div className="setting-panel flex justify-between">
+                        {isSignedIn && (
+                          <div>
+                            <h3>Sheets name:</h3>
+                            <input
+                              className="flex-grow rounded-md border dark:text-gray-100 dark:bg-gray-850 dark:border-white/20 px-2 py-1 w-full"
+                              type="text"
+                              placeholder="Sheets Name..."
+                              value={searchQuery}
+                              onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                            <ul className="google-sheet-list rounded-md border dark:text-gray-100 dark:bg-gray-850 dark:border-white/20 mt-3 py-2 px-2">
+                              {filteredSheets.map((sheet: GoogleSheetInfo) => (
+                                <li key={sheet.id} onClick={() => handleSheetClick(sheet.id, sheet.name)}>
+                                  {sheet.name}
+                                </li>
+                              ))}
+                            </ul>
+                            {selectedSheetId && (
+                              <div>
+                                <h4 className="mt-3">Selected Sheet ID: {selectedSheetId}</h4>
+                                <ul className="google-sheet-list rounded-md border dark:text-gray-100 dark:bg-gray-850 dark:border-white/20 mt-3 py-2 px-2">
+                                  {sheetDetails.map((detail: GoogleSheet, index: number) => (
+                                    <li
+                                      key={index}
+                                      onClick={() => handleDetailClick(detail)}
+                                      style={{
+                                        cursor: 'pointer',
+                                        textDecoration: selectedDetails.some(d => d.id === detail.id) ? 'underline' : 'none',
+                                        color: selectedDetails.some(d => d.id === detail.id) ? 'blue' : 'black'
+                                      }}
+                                      className={selectedDetails.some(d => d.id === detail.id) ? 'google-sheet-selected' : ''}
+                                    >
+                                      {index + 1}. {detail.title}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                            {selectedDetails.length > 0 && (
+                              <div>
+                                <h4 className="mt-3">Selected Details:</h4>
+                                <select multiple style={{ width: '100%', height: '100px' }} className="rounded-md border dark:text-gray-100 dark:bg-gray-850 dark:border-white/20 mt-3 py-2 px-2">
+                                  {selectedDetails.map((detail, index) => (
+                                    <option key={index} value={detail.id}>
+                                      {index + 1}. {detail.sheetName} - {detail.title}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
                       {/* <div className="setting-panel flex justify-between">
                         <label htmlFor="voice">{t('voice-header')}</label>

@@ -43,8 +43,7 @@ const Login = () => {
         speechVoice: user.settings.speechVoice,
         speechSpeed: user.settings.speechSpeed,
         googleAccessToken: user.settings.googleAccessToken,
-        sheetName: user.settings.sheetName,
-        spreadsheetID: user.settings.spreadsheetID,
+        googleSelectedDetails: user.settings.googleSelectedDetails,
         tags: user.settings.tags,
       });
 

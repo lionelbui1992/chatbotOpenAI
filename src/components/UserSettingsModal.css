@@ -22,3 +22,13 @@
 .svg-color-white {
   fill: #fff;
 }
+
+.google-sheet-list {
+  list-style: none;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.google-sheet-selected {
+  background-color: #f5f5f5;
+}

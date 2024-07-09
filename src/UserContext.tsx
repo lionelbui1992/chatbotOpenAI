@@ -19,8 +19,7 @@ const defaultUserSettings: UserSettings = {
   speechVoice: 'echo',
   speechSpeed: 1.0,
   googleAccessToken: "",
-  sheetName: "",
-  spreadsheetID: "",
+  googleSelectedDetails: [],
   tags: [],
 };
 
@@ -67,8 +66,7 @@ export const UserProvider = ({children}: UserProviderProps) => {
     const effectiveTheme = determineEffectiveTheme(userTheme);
 
     const googleAccessToken = localStorage.getItem('googleAccessToken') || defaultUserSettings.googleAccessToken;
-    const sheetName = localStorage.getItem('sheetName') || defaultUserSettings.sheetName;
-    const spreadsheetID = localStorage.getItem('spreadsheetID') || defaultUserSettings.spreadsheetID;
+    const googleSelectedDetails = localStorage.getItem('googleSelectedDetails') ? JSON.parse(localStorage.getItem('googleSelectedDetails')!) : defaultUserSettings.googleSelectedDetails;
     const tags = localStorage.getItem('tag')?.split(',') || defaultUserSettings.tags;
 
     return {
@@ -85,8 +83,7 @@ export const UserProvider = ({children}: UserProviderProps) => {
       speechVoice,
       speechSpeed,
       googleAccessToken,
-      sheetName,
-      spreadsheetID,
+      googleSelectedDetails,
       tags,
     };
   });
@@ -196,20 +193,12 @@ export const UserProvider = ({children}: UserProviderProps) => {
   }, [userSettings.googleAccessToken]);
 
   useEffect(() => {
-    if (userSettings.sheetName === null || userSettings.sheetName === undefined) {
-      localStorage.removeItem('sheetName');
+    if (userSettings.googleSelectedDetails === null || userSettings.googleSelectedDetails === undefined) {
+      localStorage.removeItem('googleSelectedDetails');
     } else {
-      localStorage.setItem('sheetName', userSettings.sheetName);
+      localStorage.setItem('googleSelectedDetails', JSON.stringify(userSettings.googleSelectedDetails));
     }
-  }, [userSettings.sheetName]);
-
-  useEffect(() => {
-    if (userSettings.spreadsheetID === null || userSettings.spreadsheetID === undefined) {
-      localStorage.removeItem('spreadsheetID');
-    } else {
-      localStorage.setItem('spreadsheetID', userSettings.spreadsheetID);
-    }
-  }, [userSettings.spreadsheetID]);
+  }, [userSettings.googleSelectedDetails]);
 
   useEffect(() => {
     if (userSettings.tags === null || userSettings.tags === undefined) {
