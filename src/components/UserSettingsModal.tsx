@@ -283,7 +283,7 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({isVisible, onClose
     // update user settings in context
     setUserSettings({...userSettings, googleAccessToken: authToken, googleSelectedDetails: selectedDetails});
     // update google access token in backend
-    UserService.updateSettings(userSettings)
+    UserService.updateSettings({...userSettings, googleAccessToken: authToken, googleSelectedDetails: selectedDetails})
       .then((response) => {
         if (response.status === 200) {
           NotificationService.handleSuccess("Google access token has been successfully updated.");
