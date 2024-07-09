@@ -51,4 +51,4 @@ interface UserSettings {
 }
 
 export default User;
-export type { UserSettings };
+export type { UserSettings, GoogleSelectedDetails };

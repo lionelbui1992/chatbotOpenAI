@@ -25,6 +25,7 @@ import UserService from "../service/UserService"; // Add this line to import Use
 
 import useDrivePicker from 'react-google-drive-picker'
 import { gapi } from 'gapi-script';
+import { GoogleSelectedDetails } from '../models/User';
 
 interface UserSettingsModalProps {
   isVisible: boolean;
@@ -50,14 +51,6 @@ interface GoogleSheetInfo {
 
 interface GoogleSheetInfo2 {
   id: string;
-  title: string;
-}
-
-
-interface googleSelectedDetails {
-  id: string;
-  sheetId: string;
-  sheetName: string;
   title: string;
 }
 
@@ -101,7 +94,7 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({isVisible, onClose
   const [selectedSheetId, setSelectedSheetId] = useState('');
   const [selectedSheetName, setSelectedSheetName] = useState('');
   const [sheetDetails, setSheetDetails] = useState([]);
-  const [selectedDetails, setSelectedDetails] = useState<googleSelectedDetails[]>([]);
+  const [selectedDetails, setSelectedDetails] = useState<GoogleSelectedDetails[]>([]);
   const [authToken, setAuthToken] = useState(userSettings.googleAccessToken);
 
   useEffect(() => {
