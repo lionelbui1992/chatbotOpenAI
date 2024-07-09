@@ -180,6 +180,7 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({isVisible, onClose
       supportDrives: true,
       multiselect: true,
       // customViews: customViewsArray, // custom view
+      customScopes: ['https://www.googleapis.com/auth/drive.file'],
       callbackFunction: (data) => {
         if (data.action === 'loaded') {
           console.log('Google Drive Picker loaded successfully')
@@ -188,6 +189,32 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({isVisible, onClose
         if (data.action === 'picked') {
           const file = data.docs[0];
           const file_name = file.name;
+          if (data.action === 'picked') {
+            //console.log('User selected the following files:', data.docs)
+            const file = data.docs[0];
+            console.log('Selected file:', file);
+   
+            //ermissions seclected file for user
+            const permission = {
+              role: 'reader',
+              type: 'user',
+              emailAddress: 'buiduyet.it@gmail.com'
+            };
+         
+   
+            window.gapi.auth2.init({
+              client_id: "124252875894-uiliht36jjfrf0hspqkkbmvbni89vo92.apps.googleusercontent.com"
+            }).then(() => {
+              window.gapi.client.drive.permissions.create({
+                fileId: file.id,
+                resource: permission
+              }).then((res) => {
+                console.log('Permission created:', res);
+              }).catch((error) => {
+                console.log('Error creating permission:', error);
+              });
+            });
+          }
         }
       },
     })
