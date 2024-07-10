@@ -64,11 +64,11 @@ export class ChatService {
   }
 
 
-  static async sendMessage(messages: ChatMessage[], modelId: string): Promise<ChatCompletion> {
+  static async sendMessage(token: string, messages: ChatMessage[], modelId: string): Promise<ChatCompletion> {
     let endpoint = CHAT_COMPLETIONS_ENDPOINT;
     let headers = {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${OPENAI_API_KEY}`
+      "Authorization": `Bearer ${token}`
     };
 
     const mappedMessages = await ChatService.mapChatMessagesToCompletionMessages(modelId,messages);
@@ -115,13 +115,13 @@ export class ChatService {
     };
   }
 
-  static async sendMessageStreamed(chatSettings: ChatSettings, messages: ChatMessage[], callback: (content: string,fileDataRef: FileDataRef[]) => void): Promise<any> {
+  static async sendMessageStreamed(token: string, chatSettings: ChatSettings, messages: ChatMessage[], callback: (content: string,fileDataRef: FileDataRef[]) => void): Promise<any> {
     const debouncedCallback = this.debounceCallback(callback);
     this.abortController = new AbortController();
     let endpoint = CHAT_COMPLETIONS_ENDPOINT;
     let headers = {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${OPENAI_API_KEY}`
+      "Authorization": `Bearer ${token}`
     };
 
     const requestBody: ChatCompletionRequest = {

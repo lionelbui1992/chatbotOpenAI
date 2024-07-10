@@ -325,7 +325,9 @@ const MainPage: React.FC<MainPageProps> = ({className, isSidebarCollapsed, toggl
 
     let effectiveSettings = getEffectiveChatSettings();
 
-    ChatService.sendMessageStreamed(effectiveSettings, messages, handleStreamedResponse)
+    const token = userSettings.token ?? '';
+
+    ChatService.sendMessageStreamed(token, effectiveSettings, messages, handleStreamedResponse)
       .then((response: ChatCompletion) => {
         // nop
       })
