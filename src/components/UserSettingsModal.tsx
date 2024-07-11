@@ -461,57 +461,6 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({isVisible, onClose
                           </div>
                         )}
                       </div>
-                      {/* <div className="setting-panel flex justify-between">
-                        <label htmlFor="voice">{t('voice-header')}</label>
-                        <select id="voice"
-                                className="custom-select dark:custom-select border-gray-300 border rounded p-2 dark:bg-gray-800 dark:text-white dark:border-gray-600"
-                                value={userSettings.speechVoice || undefined}
-                                onChange={(e) => setUserSettings({
-                                  ...userSettings,
-                                  speechVoice: e.target.value
-                                })}>
-                          <option value="alloy">Alloy</option>
-                          <option value="echo">Echo</option>
-                          <option value="fable">Fable</option>
-                          <option value="onyx">Onyx</option>
-                          <option value="nova">Nova</option>
-                          <option value="shimmer">Shimmer</option>
-                        </select>
-                      </div>
-                      <div className="setting-panel flex items-center justify-between">
-                        {userSettings.speechSpeed ? (
-                            <label htmlFor="speed" className="mr-4">{t('speed-header')}</label>
-                        ) : (
-                            <span className="mr-4">{t('speed-header')}</span>
-                        )}
-                        <EditableField<number | null>
-                            readOnly={false}
-                            id="speed"
-                            label=""
-                            value={userSettings.speechSpeed}
-                            defaultValue={1.0}
-                            defaultValueLabel="1.0"
-                            editorComponent={SpeechSpeedSlider}
-                            onValueChange={(value: number | null) => setUserSettings({
-                              ...userSettings,
-                              speechSpeed: value
-                            })}
-
-                        />
-                      </div>
-                      <div className="setting-panel">
-                        <label htmlFor="tts-test-area">
-                          {t('tts-test-label')}
-                        </label>
-                        <textarea
-                          id="tts-test-area"
-                          rows={2}
-                          className="shadow-sm p-2 mt-1 block w-full dark:text-gray-300 dark:bg-gray-700 sm:text-sm border border-gray-300 rounded-md"
-                          defaultValue={ttsText}
-                          onChange={(e) => setTtsText(e.target.value)}
-                        ></textarea>
-                        <TextToSpeechButton content={ttsText}/>
-                      </div> */}
                     </div>
                   </div>
                   <div className={`${activeTab === Tab.STORAGE_TAB ? 'flex flex-col flex-1' : 'hidden'}`}>
