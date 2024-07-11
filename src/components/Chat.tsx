@@ -9,7 +9,7 @@ import Tooltip from "./Tooltip";
 import {Conversation} from "../service/ConversationService";
 import {OPENAI_DEFAULT_SYSTEM_PROMPT} from "../config";
 import {DEFAULT_INSTRUCTIONS} from "../constants/appConstants";
-import {UserContext} from '../UserContext';
+import {UserContext} from '../context/UserContext';
 import {InformationCircleIcon} from "@heroicons/react/24/outline";
 import {NotificationService} from '../service/NotificationService';
 

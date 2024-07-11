@@ -12,7 +12,7 @@ import "github-markdown-css/github-markdown.css";
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
 import 'katex/dist/katex.min.css'
-import {UserContext} from "../UserContext";
+import {UserContext} from "../context/UserContext";
 import {coldarkDark, oneLight} from 'react-syntax-highlighter/dist/esm/styles/prism'
 
 interface ChatBlockProps {

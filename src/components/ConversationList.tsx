@@ -8,7 +8,7 @@ import ConversationService, {
 } from "../service/ConversationService";
 import {iconProps} from "../svg";
 import {useTranslation} from "react-i18next";
-import {UserContext} from "../UserContext";
+import {UserContext} from "../context/UserContext";
 import ConversationListItem from './ConversationListItem';
 
 function useCurrentPath() {

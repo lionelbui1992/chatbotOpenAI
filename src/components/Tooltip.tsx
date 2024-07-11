@@ -1,7 +1,7 @@
 // Tooltip.tsx
 import React, {useContext} from 'react';
 import * as RadixTooltip from '@radix-ui/react-tooltip';
-import {UserContext} from "../UserContext";
+import {UserContext} from "../context/UserContext";
 
 interface TooltipProps {
   title: string;

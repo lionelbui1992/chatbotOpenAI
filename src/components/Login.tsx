@@ -2,8 +2,7 @@
 import React, { FormEvent, useContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import Auth from '../service/Auth';
-import { UserContext } from '../UserContext';
+import { UserContext } from '../context/UserContext';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -11,7 +10,7 @@ const Login = () => {
 
   const navigate = useNavigate();
 
-  const {userSettings, setUserSettings} = useContext(UserContext);
+  const {userSettings, setUserSettings, login} = useContext(UserContext);
 
   useEffect(() => {
    // clear token in context
@@ -25,30 +24,11 @@ const Login = () => {
       toast.error('Email and password are required');
       return;
     }
-    let user = await Auth.login(email, password);
-    if (user) {
-      // update token to context
-      setUserSettings({
-        ...userSettings,
-        token: user.token,
-        user_id: user.id,
-        domain: user.domain,
-        email: user.email,
-        name: user.name,
-        userTheme: user.settings.userTheme,
-        theme: user.settings.theme,
-        model: user.settings.model,
-        instructions: user.settings.instructions,
-        speechModel: user.settings.speechModel,
-        speechVoice: user.settings.speechVoice,
-        speechSpeed: user.settings.speechSpeed,
-        googleAccessToken: user.settings.googleAccessToken,
-        googleSelectedDetails: user.settings.googleSelectedDetails,
-        tags: user.settings.tags,
-      });
-
-      // redirect to home page
+    try {
+      login(email, password);
       navigate('/');
+    } catch (error: any) {
+      toast.error(error.message);
     }
   };
 

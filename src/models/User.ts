@@ -1,4 +1,4 @@
-import { Theme, UserTheme } from "../UserContext";
+import { Theme, UserTheme } from "../context/UserContext";
 
 class User {
     id: string;
@@ -34,6 +34,7 @@ interface GoogleSelectedDetails {
 
 interface UserSettings {
     token?: string;
+    isAuthenticated: boolean;
     user_id: string | null;
     domain: string;
     email: string;

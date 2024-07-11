@@ -5,7 +5,7 @@ import {
   DocumentTextIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import {Theme, UserContext} from '../UserContext';
+import {Theme, UserContext} from '../context/UserContext';
 import ModelSelect from './ModelSelect';
 import {EditableField} from "./EditableField";
 import './UserSettingsModal.css';
@@ -183,7 +183,6 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({isVisible, onClose
       }).then(() => {
         gapi.auth2.getAuthInstance().isSignedIn.listen(setIsSignedIn);
         setIsSignedIn(gapi.auth2.getAuthInstance().isSignedIn.get());
-
         if (gapi.auth2.getAuthInstance().isSignedIn.get()) {
           setAuthToken(gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token);
         }

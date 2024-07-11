@@ -1,8 +1,9 @@
 import { AUTH_ENDPOINT } from '../constants/apiEndpoints';
 import { toast } from 'react-toastify';
 import User from '../models/User';
+import Api from './Api';
 
-class Auth {
+class Auth extends Api {
     static async register(domain: string, email: string, password: string, rePassword: string): Promise<User | null> {
         const response = await fetch(`${AUTH_ENDPOINT}/register`, {
             method: 'POST',

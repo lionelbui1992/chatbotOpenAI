@@ -1,12 +1,17 @@
 import { use } from 'i18next';
 import React, {createContext, ReactNode, useEffect, useState} from 'react';
-import { UserSettings } from './models/User';
+import Cookies from 'js-cookie';
+import { UserSettings } from '../models/User';
+
+import Api from '../service/Api';
+import { AUTH_ENDPOINT } from '../constants/apiEndpoints';
 
 export type UserTheme = 'light' | 'dark' | 'system';
 export type Theme = 'light' | 'dark';
 
 const defaultUserSettings: UserSettings = {
   token: undefined,
+  isAuthenticated: false,
   user_id: null,
   domain: '',
   email: '',
@@ -33,9 +38,18 @@ const determineEffectiveTheme = (userTheme: UserTheme): Theme => {
 export const UserContext = createContext<{
   userSettings: UserSettings;
   setUserSettings: React.Dispatch<React.SetStateAction<UserSettings>>;
+  login: (email: string, password: string) => void;
+  refresh: () => void;
+  logout: () => void;
 }>({
   userSettings: defaultUserSettings,
   setUserSettings: () => {
+  },
+  login: () => {
+  },
+  refresh: () => {
+  },
+  logout: () => {
   },
 });
 
@@ -47,6 +61,7 @@ export const UserProvider = ({children}: UserProviderProps) => {
   const [userSettings, setUserSettings] = useState<UserSettings>(() => {
     const storedToken = localStorage.getItem('userToken');
     const token = storedToken ? storedToken : defaultUserSettings.token;
+    const isAuthenticated = token !== undefined;
     const user_id = localStorage.getItem('user_id') || defaultUserSettings.user_id;
     const domain = localStorage.getItem('userDomain') || defaultUserSettings.domain;
     const email = localStorage.getItem('userEmail') || defaultUserSettings.email;
@@ -71,6 +86,7 @@ export const UserProvider = ({children}: UserProviderProps) => {
 
     return {
       token,
+      isAuthenticated,
       user_id,
       domain,
       email,
@@ -88,13 +104,84 @@ export const UserProvider = ({children}: UserProviderProps) => {
     };
   });
 
+  const login = async (email: string, password: string) => {
+    try {
+      const { data } = await Api.post(AUTH_ENDPOINT + '/login', {email, password});
+      const { access_token, refresh_token, user } = data.data;
+      Cookies.set('token', access_token);
+      Cookies.set('refreshToken', refresh_token);
+      setUserSettings(prevSettings => ({...prevSettings, isAuthenticated: true}));
+      setUserSettings({
+        ...userSettings,
+        token: access_token,
+        isAuthenticated: true,
+        user_id: user.id,
+        domain: user.domain,
+        email: user.email,
+        name: user.name,
+        userTheme: user.settings.userTheme,
+        theme: user.settings.theme,
+        model: user.settings.model,
+        instructions: user.settings.instructions,
+        speechModel: user.settings.speechModel,
+        speechVoice: user.settings.speechVoice,
+        speechSpeed: user.settings.speechSpeed,
+        googleAccessToken: user.settings.googleAccessToken,
+        googleSelectedDetails: user.settings.googleSelectedDetails,
+        tags: user.settings.tags,
+      });
+    } catch (error) {
+      throw new Error(String(error));
+    }
+  };
+
+  const refresh = async () => {
+    try {
+      const { data } = await Api.post(AUTH_ENDPOINT + '/refresh');
+      const { access_token, refersh_token } = data.data;
+      Cookies.set('token', access_token);
+      Cookies.set('refreshToken', refersh_token);
+      setUserSettings({
+        ...userSettings,
+        token: access_token,
+        isAuthenticated: true,
+      });
+    } catch (error) {
+      throw new Error(String(error));
+    }
+  };
+
+  const logout = () => {
+    Cookies.remove('token');
+    Cookies.remove('refreshToken');
+    setUserSettings(prevSettings => ({...prevSettings, isAuthenticated: true}));
+  };
+
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+    const interval = setInterval(() => {
+      if (!Cookies.get('token')) {
+        setUserSettings(prevSettings => ({...prevSettings, isAuthenticated: false}));
+      }
+    }, 1000);
+
+    const checkAuthStatus = async () => {
+      try {
+        await Api.get(AUTH_ENDPOINT + '/status'); // An endpoint to check if the user is authenticated
+        setUserSettings(prevSettings => ({...prevSettings, isAuthenticated: true}));
+      } catch (error) {
+        setUserSettings(prevSettings => ({...prevSettings, isAuthenticated: false}));
+      }
+    };
+
+    checkAuthStatus();
 
     mediaQuery.addEventListener('change', mediaQueryChangeHandler);
     updateTheme();
 
     return () => {
+      clearInterval(interval);
       mediaQuery.removeEventListener('change', mediaQueryChangeHandler);
     };
   }, []);
@@ -209,7 +296,7 @@ export const UserProvider = ({children}: UserProviderProps) => {
   }, [userSettings.tags]);
 
   return (
-      <UserContext.Provider value={{userSettings, setUserSettings}}>
+      <UserContext.Provider value={{userSettings, setUserSettings, login, refresh, logout}}>
         {children}
       </UserContext.Provider>
   );

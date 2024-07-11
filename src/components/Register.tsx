@@ -2,7 +2,7 @@ import React, { useState, useEffect, FormEvent, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Auth from '../service/Auth';
-import { UserContext } from '../UserContext';
+import { UserContext } from '../context/UserContext';
 
 const Register: React.FC = () => {
   const [domain, setDomain] = useState<string>('');

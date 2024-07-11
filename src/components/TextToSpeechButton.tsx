@@ -3,7 +3,7 @@ import {SpeakerWaveIcon, StopCircleIcon} from '@heroicons/react/24/outline';
 import {SpeechSettings} from '../models/SpeechSettings';
 import {SpeechService} from '../service/SpeechService';
 import {RotatingLines} from 'react-loader-spinner';
-import {UserContext} from '../UserContext';
+import {UserContext} from '../context/UserContext';
 import {iconProps} from "../svg";
 import {useTranslation} from "react-i18next";
 import "./Button.css";

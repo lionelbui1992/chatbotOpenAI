@@ -1,7 +1,7 @@
 // AnchoredHint.tsx
 import React, { useContext } from 'react';
 import * as RadixTooltip from '@radix-ui/react-tooltip';
-import { UserContext } from "../UserContext";
+import { UserContext } from "../context/UserContext";
 import {LightBulbIcon} from "@heroicons/react/24/outline";
 
 interface AnchoredHintProps {

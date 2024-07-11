@@ -20,7 +20,7 @@ import {ChatSettings} from '../models/ChatSettings';
 import chatSettingsDB, {chatSettingsEmitter, updateShowInSidebar} from '../service/ChatSettingsDB';
 import ChatSettingDropdownMenu from "./ChatSettingDropdownMenu";
 import ConversationService, {Conversation} from '../service/ConversationService';
-import {UserContext} from '../UserContext';
+import {UserContext} from '../context/UserContext';
 import {NotificationService} from '../service/NotificationService';
 import CustomChatSplash from './CustomChatSplash';
 import {FileDataRef} from '../models/FileData';
