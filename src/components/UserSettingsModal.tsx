@@ -3,9 +3,7 @@ import {
   CircleStackIcon,
   Cog6ToothIcon,
   DocumentTextIcon,
-  SpeakerWaveIcon,
   XMarkIcon,
-  GlobeAltIcon,
 } from "@heroicons/react/24/outline";
 import {Theme, UserContext} from '../UserContext';
 import ModelSelect from './ModelSelect';
@@ -17,9 +15,7 @@ import {NotificationService} from "../service/NotificationService";
 import {useTranslation} from 'react-i18next';
 import {Transition} from '@headlessui/react';
 import EditableInstructions from './EditableInstructions';
-import SpeechSpeedSlider from './SpeechSpeedSlider';
 import {useConfirmDialog} from './ConfirmDialog';
-import TextToSpeechButton from './TextToSpeechButton';
 import {DEFAULT_MODEL} from "../constants/appConstants";
 import UserService from "../service/UserService"; // Add this line to import UserService
 
@@ -82,7 +78,6 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({isVisible, onClose
   const [percentageUsed, setPercentageUsed] = useState<number | undefined>();
   const {t} = useTranslation();
   const editableInstructionsRef = useRef<{ getCurrentValue: () => string }>(null);
-  const [ttsText, setTtsText] = useState(SAMPLE_AUDIO_TEXT);
   
 
   const [isSignedIn, setIsSignedIn] = useState(false);
@@ -180,7 +175,11 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({isVisible, onClose
           'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest',
           'https://sheets.googleapis.com/$discovery/rest?version=v4'
         ],
-        scope: 'https://www.googleapis.com/auth/drive.metadata.readonly https://www.googleapis.com/auth/spreadsheets.readonly',
+        scope: [
+          'https://www.googleapis.com/auth/drive.metadata.readonly',
+          'https://www.googleapis.com/auth/spreadsheets.readonly',
+          'https://www.googleapis.com/auth/drive.file',
+          'https://www.googleapis.com/auth/spreadsheets'].join(' '),
       }).then(() => {
         gapi.auth2.getAuthInstance().isSignedIn.listen(setIsSignedIn);
         setIsSignedIn(gapi.auth2.getAuthInstance().isSignedIn.get());
@@ -198,6 +197,7 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({isVisible, onClose
 
   const handleSignInClick = () => {
     gapi.auth2.getAuthInstance().signIn().then(() => {
+      console.log(gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token);
       setAuthToken(gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token);
     });
   };
