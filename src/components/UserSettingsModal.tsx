@@ -88,7 +88,16 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({isVisible, onClose
   const [sheetDetails, setSheetDetails] = useState([]);
   const [selectedDetails, setSelectedDetails] = useState<GoogleSelectedDetails[]>([]);
   const [authToken, setAuthToken] = useState(userSettings.googleAccessToken);
-
+  const [sellectedDriveInfo,setSelectedDriveInfo] = useState(userSettings.googleSelectedDetails);
+  useEffect(()=>{
+    if(sellectedDriveInfo && Array(sellectedDriveInfo)){
+      setSelectedSheetId(sellectedDriveInfo[0]?.sheetId)
+      if(sellectedDriveInfo[0]?.sheetId){
+        handleSheetClick(sellectedDriveInfo[0]?.sheetId,sellectedDriveInfo[0]?.sheetName);
+        setSelectedDetails(sellectedDriveInfo)
+      }
+    }
+  },[sellectedDriveInfo])
   useEffect(() => {
     if (isVisible) {
       setActiveTab(Tab.GENERAL_TAB);
@@ -219,7 +228,7 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({isVisible, onClose
   };
 
   const listSheetDetails = (sheetId: string) => {
-    gapi.client.sheets.spreadsheets.get({
+    gapi.client?.sheets?.spreadsheets.get({
       spreadsheetId: sheetId,
     }).then((response: any) => {
       const sheetsData = response.result.sheets.map((sheet: GoogleSheetDetail) => ({ id: sheet.properties.sheetId, title: sheet.properties.title }));
@@ -238,7 +247,7 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({isVisible, onClose
   const handleSheetClick = (sheetId: string, sheetName: string) => {
     setSelectedSheetId(sheetId);
     setSelectedSheetName(sheetName);
-    listSheetDetails(sheetId);
+    listSheetDetails(sheetId ?? "");
   };
 
   const handleDetailClick = (detail: GoogleSheetInfo2) => {
@@ -272,11 +281,10 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({isVisible, onClose
       }
   };
 
-  const filteredSheets = sheets.filter((sheet: GoogleSheetInfo) => {
+  const filteredSheets = sheets?.filter((sheet: GoogleSheetInfo) => {
     return sheet.name.toLowerCase().includes(searchQuery.toLowerCase());
   }
   );
-
   const renderStorageInfo = (value?: number | string) => value ?? t('non-applicable');
 
   return (
@@ -409,7 +417,7 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({isVisible, onClose
                       </div>
                       <div className="setting-panel flex justify-between">
                         {isSignedIn && (
-                          <div>
+                          <div className='w-full'>
                             <h3>Sheets name:</h3>
                             <input
                               className="flex-grow rounded-md border dark:text-gray-100 dark:bg-gray-850 dark:border-white/20 px-2 py-1 w-full"
@@ -420,7 +428,10 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({isVisible, onClose
                             />
                             <ul className="google-sheet-list rounded-md border dark:text-gray-100 dark:bg-gray-850 dark:border-white/20 mt-3 py-2 px-2">
                               {filteredSheets.map((sheet: GoogleSheetInfo) => (
-                                <li key={sheet.id} onClick={() => handleSheetClick(sheet.id, sheet.name)}>
+                                <li 
+                                key={sheet.id} onClick={() => handleSheetClick(sheet.id, sheet.name)}
+                                className={sheet.id === sellectedDriveInfo[0]?.sheetId ? 'selected' : ''}
+                                >
                                   {sheet.name}
                                 </li>
                               ))}
