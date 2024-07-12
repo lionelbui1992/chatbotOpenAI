@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {BrowserRouter, Navigate, Route, Routes} from 'react-router-dom';
 import {I18nextProvider} from 'react-i18next';
 import i18n from './i18n';
@@ -13,9 +13,30 @@ import Login from './components/Login';
 import Register from './components/Register';
 import { UserContext } from './UserContext';
 
-const App = () => {
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+const App = () => {  
   const {userSettings, setUserSettings} = useContext(UserContext);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  useEffect(()=>{
+      if(windowWidth < 800){
+        toggleSidebarCollapse();
+      }else{
+        setIsSidebarCollapsed(false)
+      }
+  },[windowWidth])
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+  
+    window.addEventListener('resize', handleResize);
+  
+    handleResize();
+  
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+    
   const toggleSidebarCollapse = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed);
   };
