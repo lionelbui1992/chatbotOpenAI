@@ -4,7 +4,7 @@ import {
   Cog6ToothIcon,
   DocumentTextIcon,
   XMarkIcon,
-  ArrowLeftOnRectangleIcon
+  ArrowLeftOnRectangleIcon,
 } from "@heroicons/react/24/outline";
 import {Theme, UserContext} from '../UserContext';
 import ModelSelect from './ModelSelect';
@@ -91,12 +91,12 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({isVisible, onClose
   const [selectedDetails, setSelectedDetails] = useState<GoogleSelectedDetails[]>([]);
   const [authToken, setAuthToken] = useState(userSettings.googleAccessToken);
   const [sellectedDriveInfo,setSelectedDriveInfo] = useState(userSettings.googleSelectedDetails);
-  
+  const [isLoading,setIsLoading] = useState(false);
+
 const navigate = useNavigate();
 
   useEffect(()=>{
     if(Array(sellectedDriveInfo)){
-      setSelectedSheetId(sellectedDriveInfo[0]?.sheetId)
       handleSheetClick(sellectedDriveInfo[0]?.sheetId,sellectedDriveInfo[0]?.sheetName);
       setSelectedDetails(sellectedDriveInfo)
     }
@@ -273,13 +273,14 @@ const navigate = useNavigate();
 
   const handleSaveGoogleInfo = () => {
     // update user settings in context
+    onClose();
     setUserSettings({...userSettings, googleAccessToken: authToken, googleSelectedDetails: selectedDetails});
     // update google access token in backend
     if (userSettings.token) {
       UserService.updateGoogleSettings(userSettings.token, authToken, selectedDetails)
         .then((response) => {
-          console.log(response);
           if (response.status === 200) {
+            setIsLoading(false);
             NotificationService.handleSuccess("Google access token has been successfully updated.");
           } else {
             NotificationService.handleUnexpectedError(new Error('An unknown error occurred'), "Failed to update google access token");
@@ -312,10 +313,10 @@ const navigate = useNavigate();
               leaveTo="opacity-0 scale-95"
           >
             <div ref={dialogRef}
-                 className="flex flex-col bg-white dark:bg-gray-850 rounded-lg w-full max-w-md mx-auto overflow-hidden"
-                 style={{minHeight: "640px", minWidth: "43em"}}>
+                  className="flex flex-col bg-white dark:bg-gray-850 rounded-lg w-full max-w-md mx-auto overflow-hidden"
+                  style={{minHeight: "640px", minWidth: "43em"}}>
               <div id='user-settings-header'
-                   className="flex justify-between items-center border-b border-gray-200 p-4">
+                    className="flex justify-between items-center border-b border-gray-200 p-4">
                 <h1 className="text-lg font-semibold">{t('settings-header')}</h1>
                 <button onClick={handleClose}
                         className="text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100">
@@ -395,9 +396,9 @@ const navigate = useNavigate();
                             defaultValueLabel={DEFAULT_MODEL}
                             editorComponent={(props) =>
                                 <ModelSelect value={userSettings.model}
-                                             onModelSelect={props.onValueChange}
-                                             models={[]} allowNone={true}
-                                             allowNoneLabel="Default"/>}
+                                              onModelSelect={props.onValueChange}
+                                              models={[]} allowNone={true}
+                                              allowNoneLabel="Default"/>}
                             onValueChange={(value: string | null) => {
                               setUserSettings({...userSettings, model: value});
                             }}
