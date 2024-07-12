@@ -4,6 +4,7 @@ import {
   Cog6ToothIcon,
   DocumentTextIcon,
   XMarkIcon,
+  ArrowLeftOnRectangleIcon
 } from "@heroicons/react/24/outline";
 import {Theme, UserContext} from '../UserContext';
 import ModelSelect from './ModelSelect';
@@ -21,6 +22,7 @@ import UserService from "../service/UserService"; // Add this line to import Use
 
 import { gapi } from 'gapi-script';
 import { GoogleSelectedDetails } from '../models/User';
+import { useNavigate } from 'react-router-dom';
 
 interface UserSettingsModalProps {
   isVisible: boolean;
@@ -89,13 +91,14 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({isVisible, onClose
   const [selectedDetails, setSelectedDetails] = useState<GoogleSelectedDetails[]>([]);
   const [authToken, setAuthToken] = useState(userSettings.googleAccessToken);
   const [sellectedDriveInfo,setSelectedDriveInfo] = useState(userSettings.googleSelectedDetails);
+  
+const navigate = useNavigate();
+
   useEffect(()=>{
-    if(sellectedDriveInfo && Array(sellectedDriveInfo)){
+    if(Array(sellectedDriveInfo)){
       setSelectedSheetId(sellectedDriveInfo[0]?.sheetId)
-      if(sellectedDriveInfo[0]?.sheetId){
-        handleSheetClick(sellectedDriveInfo[0]?.sheetId,sellectedDriveInfo[0]?.sheetName);
-        setSelectedDetails(sellectedDriveInfo)
-      }
+      handleSheetClick(sellectedDriveInfo[0]?.sheetId,sellectedDriveInfo[0]?.sheetName);
+      setSelectedDetails(sellectedDriveInfo)
     }
   },[sellectedDriveInfo])
   useEffect(() => {
@@ -204,17 +207,27 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({isVisible, onClose
     gapi.load('client:auth2', start);
   }, []);
 
+
   const handleSignInClick = () => {
     gapi.auth2.getAuthInstance().signIn().then(() => {
       console.log(gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token);
       setAuthToken(gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token);
+      if(gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token){
+        setIsSignedIn(true)
+      }
     });
   };
-
   const handleSignOutClick = () => {
     gapi.auth2.getAuthInstance().signOut();
+    setIsSignedIn(false)
     setAuthToken('');
   };
+
+  const Logout=()=>{
+    setAuthToken('');
+    onClose();
+    navigate('/login')
+  }
 
   const listSheets = () => {
     gapi.client.drive.files.list({
@@ -286,7 +299,6 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({isVisible, onClose
   }
   );
   const renderStorageInfo = (value?: number | string) => value ?? t('non-applicable');
-
   return (
       <Transition show={isVisible} as={React.Fragment}>
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 px-4">
@@ -340,6 +352,11 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({isVisible, onClose
                       className={`cursor-pointer p-4 flex items-center ${activeTab === Tab.STORAGE_TAB ? 'bg-gray-200 dark:bg-gray-700' : ''}`}
                       onClick={() => setActiveTab(Tab.STORAGE_TAB)}>
                     <CircleStackIcon className="w-4 h-4 mr-3" aria-hidden="true"/>{t('storage-tab')}
+                  </div>
+                  <div
+                      className={`cursor-pointer p-4 flex items-center`}
+                      onClick={() => Logout()}>
+                    <ArrowLeftOnRectangleIcon className="w-4 h-4 mr-3" aria-hidden="true"/>Logout
                   </div>
                 </div>
                 <div className="flex-1 p-4 flex flex-col">
@@ -430,7 +447,7 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({isVisible, onClose
                               {filteredSheets.map((sheet: GoogleSheetInfo) => (
                                 <li 
                                 key={sheet.id} onClick={() => handleSheetClick(sheet.id, sheet.name)}
-                                className={sheet.id === sellectedDriveInfo[0]?.sheetId ? 'selected' : ''}
+                                className={sheet?.id === sellectedDriveInfo[0]?.sheetId ? 'selected' : ''}
                                 >
                                   {sheet.name}
                                 </li>
