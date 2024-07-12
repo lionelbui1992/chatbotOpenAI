@@ -1,17 +1,17 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import ChatBlock from "./ChatBlock";
 import ModelSelect from "./ModelSelect";
-import {OpenAIModel} from "../models/model";
-import {ChatService} from "../service/ChatService";
-import {ChatMessage} from "../models/ChatCompletion";
-import {useTranslation} from 'react-i18next';
+import { OpenAIModel } from "../models/model";
+import { ChatService } from "../service/ChatService";
+import { ChatMessage } from "../models/ChatCompletion";
+import { useTranslation } from 'react-i18next';
 import Tooltip from "./Tooltip";
-import {Conversation} from "../service/ConversationService";
-import {OPENAI_DEFAULT_SYSTEM_PROMPT} from "../config";
-import {DEFAULT_INSTRUCTIONS} from "../constants/appConstants";
-import {UserContext} from '../UserContext';
-import {InformationCircleIcon} from "@heroicons/react/24/outline";
-import {NotificationService} from '../service/NotificationService';
+import { Conversation } from "../service/ConversationService";
+import { OPENAI_DEFAULT_SYSTEM_PROMPT } from "../config";
+import { DEFAULT_INSTRUCTIONS } from "../constants/appConstants";
+import { UserContext } from '../UserContext';
+import { InformationCircleIcon, ArrowLeftCircleIcon } from "@heroicons/react/24/outline";
+import { NotificationService } from '../service/NotificationService';
 
 interface Props {
   chatBlocks: ChatMessage[];
@@ -24,22 +24,43 @@ interface Props {
 }
 
 const Chat: React.FC<Props> = ({
-                                 chatBlocks, onChatScroll, allowAutoScroll, model,
-                                 onModelChange, conversation, loading
-                               }) => {
-  const {userSettings, setUserSettings} = useContext(UserContext);
-  const {t} = useTranslation();
+  chatBlocks, onChatScroll, allowAutoScroll, model,
+  onModelChange, conversation, loading
+}) => {
+  const { userSettings, setUserSettings } = useContext(UserContext);
+  const { t } = useTranslation();
   const [models, setModels] = useState<OpenAIModel[]>([]);
   const chatDivRef = useRef<HTMLDivElement>(null);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [showHideSearch, setShowHideSearch] = useState(true);
+  useEffect(() => {
+    if (windowWidth < 500) {
+      setShowHideSearch(false);
+    } else {
+      setShowHideSearch(true)
+    }
+  }, [windowWidth])
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    handleResize();
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     ChatService.getModels()
-        .then(models => {
-          setModels(models);
-        })
-        .catch(err => {
-          NotificationService.handleUnexpectedError(err, 'Failed to get list of models');
-        });
+      .then(models => {
+        setModels(models);
+      })
+      .catch(err => {
+        NotificationService.handleUnexpectedError(err, 'Failed to get list of models');
+      });
 
   }, []);
 
@@ -53,8 +74,8 @@ const Chat: React.FC<Props> = ({
     const chatContainer = chatDivRef.current;
     if (chatContainer) {
       const isAtBottom =
-          chatContainer.scrollHeight - chatContainer.scrollTop ===
-          chatContainer.clientHeight;
+        chatContainer.scrollHeight - chatContainer.scrollTop ===
+        chatContainer.clientHeight;
 
       // Initially hide the button if chat is at the bottom
       onChatScroll(isAtBottom);
@@ -76,9 +97,9 @@ const Chat: React.FC<Props> = ({
     if (chatDivRef.current) {
       const scrollThreshold = 20;
       const isAtBottom =
-          chatDivRef.current.scrollHeight -
-          chatDivRef.current.scrollTop <=
-          chatDivRef.current.clientHeight + scrollThreshold;
+        chatDivRef.current.scrollHeight -
+        chatDivRef.current.scrollTop <=
+        chatDivRef.current.clientHeight + scrollThreshold;
 
       // Notify parent component about the auto-scroll status
       onChatScroll(isAtBottom);
@@ -90,57 +111,72 @@ const Chat: React.FC<Props> = ({
     }
   };
 
+  const showSelect = (status: boolean, event: any) => {
+    event.stopPropagation();
+    setShowHideSearch(status)
+    if (windowWidth < 500) {
+      setTimeout(() => {
+        setShowHideSearch(false)
+      }, 5000)
+    }
+  }
   return (
-      <div id={'chat-container'} ref={chatDivRef} className="relative chat-container flex-1 overflow-auto" onScroll={handleScroll}>
-        <div  id={'chat-container1'}  className="relative chat-container1 flex flex-col items-center text-sm dark:bg-gray-900">
-          <div
-              className={`flex w-full items-center justify-center gap-1 p-3 text-gray-500 dark:border-gray-900/50 dark:bg-gray-900 dark:text-gray-300 ${!(conversation === null) ? 'border-b border-black/10' : ''}`}>
-            <div className="flex items-center flex-row gap-1">
-              {!conversation ? '' : (
-                  <Tooltip
-                      title={conversation.systemPrompt ?? userSettings.instructions ?? OPENAI_DEFAULT_SYSTEM_PROMPT ?? DEFAULT_INSTRUCTIONS}
-                      side="bottom" sideOffset={10}>
-                              <span style={{marginLeft: '10px', fontSize: '0.85rem', color: '#6b7280'}}>
-                                 <InformationCircleIcon width={20} height={20} stroke={'currentColor'}/>
-                              </span>
-                  </Tooltip>
-              )}
-              <span style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                            {t('model')}
-                {conversation && (
-                    <span>
+    <div id={'chat-container'} ref={chatDivRef} className="relative chat-container flex-1 overflow-auto" onScroll={handleScroll}>
+      <div id={'chat-container1'} className="relative chat-container1 flex flex-col items-center text-sm dark:bg-gray-900">
+        <div
+          className={`flex w-full items-center justify-center gap-1 p-3 text-gray-500 dark:border-gray-900/50 dark:bg-gray-900 dark:text-gray-300 ${!(conversation === null) ? 'border-b border-black/10' : ''}`}>
+          <div className="flex items-center flex-row gap-1 mt-2">
+            {!conversation ? '' : (
+              <Tooltip
+                title={conversation.systemPrompt ?? userSettings.instructions ?? OPENAI_DEFAULT_SYSTEM_PROMPT ?? DEFAULT_INSTRUCTIONS}
+                side="bottom" sideOffset={10}>
+                <span style={{ marginLeft: '10px', fontSize: '0.85rem', color: '#6b7280' }}>
+                  <InformationCircleIcon width={20} height={20} stroke={'currentColor'} />
+                </span>
+              </Tooltip>
+            )}
+            <span className="hidden sm:flex justify-between items-center mr-10 " >
+              {t('model')}
+              {conversation && (
+                <span>
 
-                                  <span style={{marginLeft: '0.25em'}}>{conversation.model}</span>
-                                  <Tooltip title={t('context-window')} side="bottom" sideOffset={10}>
-                                      <span style={{marginLeft: '10px', fontSize: '0.85rem', color: '#6b7280'}}>
-                                        {formatContextWindow(findModelById(conversation.model)?.context_window)}
-                                      </span>
-                                  </Tooltip>
-                                     <Tooltip title={t('knowledge-cutoff')} side="bottom" sideOffset={10}>
-                                      <span style={{marginLeft: '10px', fontSize: '0.85rem', color: '#6b7280'}}>
-                                        {findModelById(conversation.model)?.knowledge_cutoff}
-                                      </span>
-                                  </Tooltip>
-                              </span>
-                )
-                }
-                        </span>
-              {!conversation && (
-                  <span className="flex-grow" style={{width: '50ch'}}>
-                          <ModelSelect value={model} onModelSelect={onModelChange} models={models}/>
-                        </span>
-              )}
-            </div>
+                  <span style={{ marginLeft: '0.25em' }}>{conversation.model}</span>
+                  <Tooltip title={t('context-window')} side="bottom" sideOffset={10}>
+                    <span style={{ marginLeft: '10px', fontSize: '0.85rem', color: '#6b7280' }}>
+                      {formatContextWindow(findModelById(conversation.model)?.context_window)}
+                    </span>
+                  </Tooltip>
+                  <Tooltip title={t('knowledge-cutoff')} side="bottom" sideOffset={10}>
+                    <span style={{ marginLeft: '10px', fontSize: '0.85rem', color: '#6b7280' }}>
+                      {findModelById(conversation.model)?.knowledge_cutoff}
+                    </span>
+                  </Tooltip>
+                </span>
+              )
+              }
+            </span>
+            {!conversation && (
+              <>
+                {showHideSearch ? (
+                  <span className="flex-grow max-[400px]:w-9/12" style={{ width: '50ch' }} >
+                    <ModelSelect value={model} onModelSelect={onModelChange} models={models} />
+                  </span>
+                ) : (
+                  <ArrowLeftCircleIcon onClick={() => showSelect(true, event)} className="xs:hidden h-6 w-6 text-white-500 absolute right-2 top-2 cursor-pointer" />
+                )}
+              </>
+            )}
           </div>
-          {chatBlocks.map((block, index) => (
-              <ChatBlock key={`chat-block-${block.id}`}
-                         block={block}
-                         loading={index === chatBlocks.length - 1 && loading}
-                         isLastBlock={index === chatBlocks.length - 1}/>
-          ))}
-          <div className="w-full h-24 flex-shrink-0"></div>
         </div>
+        {chatBlocks.map((block, index) => (
+          <ChatBlock key={`chat-block-${block.id}`}
+            block={block}
+            loading={index === chatBlocks.length - 1 && loading}
+            isLastBlock={index === chatBlocks.length - 1} />
+        ))}
+        <div className="w-full h-24 flex-shrink-0"></div>
       </div>
+    </div>
   );
 };
 
