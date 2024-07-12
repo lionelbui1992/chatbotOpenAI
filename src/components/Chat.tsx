@@ -158,7 +158,7 @@ const Chat: React.FC<Props> = ({
             {!conversation && (
               <>
                 {showHideSearch ? (
-                  <span className="flex-grow max-[400px]:w-9/12" style={{ width: '50ch' }} >
+                  <span className="flex-grow w-9/12 sm:w-full">
                     <ModelSelect value={model} onModelSelect={onModelChange} models={models} />
                   </span>
                 ) : (
