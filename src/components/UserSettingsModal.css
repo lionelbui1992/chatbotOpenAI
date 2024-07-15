@@ -36,7 +36,7 @@
 }
 .user-setting-container{
   min-width: 100%;
-  min-height: 640px;
+  min-height: 340px;
 }
 .user-setting-side-bar{
   display: none;
@@ -57,7 +57,10 @@
   justify-content:space-between;
   align-items: center;
   flex-wrap: wrap;
-  width: fit-content;
+  width: 100%;
+}
+.tab-content{
+
 }
 @media (min-width:700px) {
   .user-setting-side-bar{
@@ -69,5 +72,11 @@
   }
   .chevoright{
     display: none;
+  }
+}
+@media (max-width:500px) {
+  .google-tab{
+    max-height: 350px;
+    overflow-y: scroll;
   }
 }

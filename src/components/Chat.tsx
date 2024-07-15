@@ -12,7 +12,7 @@ import { DEFAULT_INSTRUCTIONS } from "../constants/appConstants";
 import { UserContext } from '../UserContext';
 import { InformationCircleIcon, ArrowLeftCircleIcon } from "@heroicons/react/24/outline";
 import { NotificationService } from '../service/NotificationService';
-
+import './Chat.css';
 interface Props {
   chatBlocks: ChatMessage[];
   onChatScroll: (isAtBottom: boolean) => void;
@@ -135,7 +135,7 @@ const Chat: React.FC<Props> = ({
                 </span>
               </Tooltip>
             )}
-            <span className="hidden sm:flex justify-between items-center mr-10 " >
+            <span className="model-heading" >
               {t('model')}
               {conversation && (
                 <span>

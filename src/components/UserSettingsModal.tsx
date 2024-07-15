@@ -374,7 +374,7 @@ const navigate = useNavigate();
                     <ArrowLeftOnRectangleIcon className="w-4 h-4 mr-3" aria-hidden="true"/>Logout
                   </div>
                 </div>
-                <div className="flex-1 p-4 flex flex-col">
+                <div className="flex-1 p-4 flex flex-col tab-content">
                   <div className={`${activeTab === Tab.GENERAL_TAB ? 'flex flex-col flex-1' : 'hidden'}`}>
                     <div className="border-b border-token-border-light pb-3 last-of-type:border-b-0">
                       <div className="flex items-center justify-between setting-panel flex-wrap">
@@ -435,7 +435,7 @@ const navigate = useNavigate();
                       />
                     </div>
                   </div>
-                  <div className={`${activeTab === Tab.GOOGLE_TAB ? 'flex flex-col flex-1' : 'hidden'}`}>
+                  <div className={`${activeTab === Tab.GOOGLE_TAB ? 'flex flex-col flex-1 google-tab' : 'hidden'}`}>
                     <div className="flex flex-col flex-1">
                       <div className="setting-panel">
                         {isSignedIn ? (

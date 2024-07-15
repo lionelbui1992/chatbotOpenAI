@@ -1,0 +1,10 @@
+.model-heading{
+    display: none;
+    width: 100%;
+}
+@media (min-width:640px){
+    .model-heading{
+        display: block;
+        margin-right: 10px;
+    }
+}
