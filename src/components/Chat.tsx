@@ -12,7 +12,7 @@ import { DEFAULT_INSTRUCTIONS } from "../constants/appConstants";
 import { UserContext } from '../UserContext';
 import { InformationCircleIcon, ArrowLeftCircleIcon } from "@heroicons/react/24/outline";
 import { NotificationService } from '../service/NotificationService';
-import './Chat.css';
+import '../assets/styles/Chat.css';
 interface Props {
   chatBlocks: ChatMessage[];
   onChatScroll: (isAtBottom: boolean) => void;

@@ -2,7 +2,7 @@ import React from 'react';
 import {useNavigate} from 'react-router-dom';
 import {ChatSettings} from '../models/ChatSettings';
 import CubeIcon from '@heroicons/react/24/outline/CubeIcon';
-import './ExploreCustomChats.css'
+import '../assets/styles/ExploreCustomChats.css'
 import ChatSettingDropdownMenu from './ChatSettingDropdownMenu';
 
 interface ChatSettingsListProps {

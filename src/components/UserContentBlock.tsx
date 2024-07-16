@@ -1,7 +1,7 @@
 import React from 'react';
 import {SNIPPET_MARKERS} from "../constants/appConstants";
 import FoldableTextSection from './FoldableTextSection';
-import { FileData, FileDataRef } from '../models/FileData';
+import { FileDataRef } from '../models/FileData';
 import FileDataPreview from './FileDataPreview';
 
 interface UserContentBlockProps {

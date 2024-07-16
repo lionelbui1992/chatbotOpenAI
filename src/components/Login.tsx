@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import Auth from '../service/Auth';
 import { UserContext } from '../UserContext';
-import './Login.css'
+import '../assets/styles/Login.css'
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

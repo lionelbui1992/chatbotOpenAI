@@ -1,7 +1,7 @@
 import React, {useContext} from 'react';
 import ReactMarkdown from 'react-markdown';
 import {visit} from 'unist-util-visit';
-import "./MarkdownBlock.css";
+import "../assets/styles/MarkdownBlock.css";
 
 // import SyntaxHighlighter from 'react-syntax-highlighter';
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';

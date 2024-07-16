@@ -13,7 +13,7 @@ import {ChatService} from '../service/ChatService';
 import {useTranslation} from 'react-i18next';
 import Tooltip from "./Tooltip";
 import {DEFAULT_MODEL} from "../constants/appConstants";
-import './ModelSelect.css'
+import '../assets/styles/ModelSelect.css'
 import {UserContext} from "../UserContext";
 import {EyeIcon} from '@heroicons/react/24/outline';
 import AnchoredHint from './AnchoredHint';

@@ -4,7 +4,7 @@ import { NoSymbolIcon,XMarkIcon, ChevronLeftIcon, ChevronRightIcon } from '@hero
 import { FileDataRef } from '../models/FileData';
 import {useTranslation} from "react-i18next";
 import Tooltip from './Tooltip';
-import './FileDataPreview.css';
+import '../assets/styles/FileDataPreview.css';
 import {IMAGE_MAX_ZOOM} from "../constants/appConstants";
 
 interface Props {

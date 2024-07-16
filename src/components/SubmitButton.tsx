@@ -1,6 +1,6 @@
 import React from 'react';
 import {EllipsisHorizontalIcon, PaperAirplaneIcon} from '@heroicons/react/24/outline';
-import './SubmitButton.css';
+import '../assets/styles/SubmitButton.css';
 import Tooltip from "./Tooltip";
 import {useTranslation} from 'react-i18next';
 

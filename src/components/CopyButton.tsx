@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import {CheckIcon, ClipboardIcon} from "@heroicons/react/24/outline";
 import {iconProps} from "../svg";
 import {useTranslation} from 'react-i18next';
-import "./Button.css"
+import "../assets/styles/Button.css"
 import Tooltip from "./Tooltip";
 
 export enum CopyButtonMode {
