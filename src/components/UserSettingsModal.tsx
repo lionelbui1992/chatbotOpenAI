@@ -268,7 +268,8 @@ const navigate = useNavigate();
           .then((response) => {
             if (response.status === 200) {
               setIsLoading(false);
-              NotificationService.handleSuccess("Google access token has been successfully updated.");
+            } else if (response.status === 401) {
+              navigate('/login');
             } else {
               NotificationService.handleUnexpectedError(new Error('An unknown error occurred'), "Failed to update google access token");
             }
@@ -308,6 +309,8 @@ const navigate = useNavigate();
           if (response.status === 200) {
             setIsLoading(false);
             NotificationService.handleSuccess("Google access token has been successfully updated.");
+          } else if (response.status === 401) {
+            navigate('/login');
           } else {
             NotificationService.handleUnexpectedError(new Error('An unknown error occurred'), "Failed to update google access token");
           }

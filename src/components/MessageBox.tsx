@@ -390,7 +390,7 @@ const MessageBox =
               {/* Container for Textarea and Buttons */}
               <div className="flex items-center w-full relative space-x-2">
                 {/* Attachment Button */}
-                <div className="flex items-center justify-start">
+                <div className="flex items-center justify-start hidden">
                   <button
                     onClick={(e) => handleAttachment(e)}
                     className="p-1 relative z-10">
