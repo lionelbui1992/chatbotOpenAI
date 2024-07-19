@@ -27,7 +27,7 @@ class UserService {
         });
     }
 
-    static async updateGoogleSettings(token: string, googleAccessToken: string, googleSelectedDetails: GoogleSelectedDetails[]): Promise<Response> {
+    static async updateGoogleSettings(token: string, googleAccessToken: string, googleSelectedDetails: GoogleSelectedDetails[], updateData = true): Promise<Response> {
         return await fetch(USER_ENDPOINT + '/google', {
             method: 'PUT',
             headers: {
@@ -37,6 +37,7 @@ class UserService {
             body: JSON.stringify({
                 googleAccessToken,
                 googleSelectedDetails,
+                updateData,
             }),
         });
     }

@@ -216,9 +216,7 @@ const navigate = useNavigate();
     gapi.auth2.getAuthInstance().signIn().then(() => {
       console.log(gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token);
       setAuthToken(gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token);
-      if(gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token){
-        setIsSignedIn(true)
-      }
+      setIsSignedIn(true);
     });
   };
   const handleSignOutClick = () => {
@@ -261,6 +259,30 @@ const navigate = useNavigate();
     }
   }, [isSignedIn]);
 
+  useEffect(() => {
+    if (authToken) {
+      setUserSettings({...userSettings, googleAccessToken: authToken});
+      // update google access token in backend
+      if (userSettings.token) {
+        UserService.updateGoogleSettings(userSettings.token, authToken, selectedDetails, false)
+          .then((response) => {
+            if (response.status === 200) {
+              setIsLoading(false);
+              NotificationService.handleSuccess("Google access token has been successfully updated.");
+            } else {
+              NotificationService.handleUnexpectedError(new Error('An unknown error occurred'), "Failed to update google access token");
+            }
+          }).catch((error) => {
+            if (error instanceof Error) {
+              NotificationService.handleUnexpectedError(error, "Failed to update google access token");
+            } else {
+              NotificationService.handleUnexpectedError(new Error('An unknown error occurred'), "Failed to update google access token");
+            }
+        });
+      }
+    }
+  }, [authToken]);
+
   const handleSheetClick = (sheetId: string, sheetName: string) => {
     setSelectedSheetId(sheetId);
     setSelectedSheetName(sheetName);
@@ -281,7 +303,7 @@ const navigate = useNavigate();
     setUserSettings({...userSettings, googleAccessToken: authToken, googleSelectedDetails: selectedDetails});
     // update google access token in backend
     if (userSettings.token) {
-      UserService.updateGoogleSettings(userSettings.token, authToken, selectedDetails)
+      UserService.updateGoogleSettings(userSettings.token, authToken, selectedDetails, true)
         .then((response) => {
           if (response.status === 200) {
             setIsLoading(false);
@@ -295,8 +317,8 @@ const navigate = useNavigate();
           } else {
             NotificationService.handleUnexpectedError(new Error('An unknown error occurred'), "Failed to update google access token");
           }
-        });
-      }
+      });
+    }
   };
 
   const filteredSheets = sheets?.filter((sheet: GoogleSheetInfo) => {
