@@ -1,27 +1,8 @@
-import { use } from 'i18next';
 import React, {createContext, ReactNode, useEffect, useState} from 'react';
-import { UserSettings } from './models/User';
+import { defaultUserSettings, UserSettings } from './models/User';
 
 export type UserTheme = 'light' | 'dark' | 'system';
 export type Theme = 'light' | 'dark';
-
-const defaultUserSettings: UserSettings = {
-  token: undefined,
-  user_id: null,
-  domain: '',
-  email: '',
-  name: '',
-  userTheme: 'system',
-  theme: 'light',
-  model: null,
-  instructions: '',
-  speechModel: 'tts-1',
-  speechVoice: 'echo',
-  speechSpeed: 1.0,
-  googleAccessToken: "",
-  googleSelectedDetails: [],
-  tags: [],
-};
 
 const determineEffectiveTheme = (userTheme: UserTheme): Theme => {
   if (userTheme === 'system' || !userTheme) {

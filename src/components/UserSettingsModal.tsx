@@ -22,7 +22,7 @@ import {DEFAULT_MODEL} from "../constants/appConstants";
 import UserService from "../service/UserService"; // Add this line to import UserService
 
 import { gapi } from 'gapi-script';
-import { GoogleSelectedDetails } from '../models/User';
+import { defaultUserSettings, GoogleSelectedDetails } from '../models/User';
 import { useNavigate } from 'react-router-dom';
 
 interface UserSettingsModalProps {
@@ -225,6 +225,8 @@ const navigate = useNavigate();
 
   const Logout=()=>{
     setAuthToken('');
+    // clear all storage and navigate to login page
+    setUserSettings(defaultUserSettings);
     onClose();
     navigate('/login')
   }

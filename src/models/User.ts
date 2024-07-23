@@ -50,5 +50,24 @@ interface UserSettings {
     tags: string[] | null;
 }
 
+const defaultUserSettings: UserSettings = {
+    token: undefined,
+    user_id: null,
+    domain: '',
+    email: '',
+    name: '',
+    userTheme: 'system',
+    theme: 'light',
+    model: null,
+    instructions: '',
+    speechModel: 'tts-1',
+    speechVoice: 'echo',
+    speechSpeed: 1.0,
+    googleAccessToken: "",
+    googleSelectedDetails: [],
+    tags: [],
+};
+
 export default User;
 export type { UserSettings, GoogleSelectedDetails };
+export { defaultUserSettings };
