@@ -2,6 +2,7 @@ import { Theme, UserTheme } from "../UserContext";
 
 class User {
     id: string;
+    role: string;
     domain: string;
     email: string;
     name: string;
@@ -10,6 +11,7 @@ class User {
 
     constructor(
         id: string,
+        role: string,
         domain: string,
         email: string,
         name: string,
@@ -17,6 +19,7 @@ class User {
         settings: UserSettings
     ) {
         this.id = id;
+        this.role = role;
         this.domain = domain;
         this.email = email;
         this.name = name;
@@ -35,6 +38,7 @@ interface GoogleSelectedDetails {
 interface UserSettings {
     token?: string;
     user_id: string | null;
+    role: string;
     domain: string;
     email: string;
     name: string;
@@ -53,6 +57,7 @@ interface UserSettings {
 const defaultUserSettings: UserSettings = {
     token: undefined,
     user_id: null,
+    role: 'user',
     domain: '',
     email: '',
     name: '',

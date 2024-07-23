@@ -15,7 +15,7 @@ class Auth {
         if (response.status === 200) {
             const { token, user } = data.data;
             localStorage.setItem('userSettings', JSON.stringify(user.settings));
-            return new User(user.id, user.domain, user.email, user.name, token, user.settings);
+            return new User(user.id, user.role, user.domain, user.email, user.name, token, user.settings);
         } else {
             toast.error(data.message);
             return null;
@@ -34,7 +34,7 @@ class Auth {
         if (response.status === 200) {
             const { token, user } = data.data;
             localStorage.setItem('userSettings', JSON.stringify(user.settings));
-            return new User(user.id, user.domain, user.email, user.name, token, user.settings);
+            return new User(user.id, user.role, user.domain, user.email, user.name, token, user.settings);
         } else {
             toast.error(data.message);
             return null;

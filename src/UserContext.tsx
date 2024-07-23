@@ -1,5 +1,6 @@
 import React, {createContext, ReactNode, useEffect, useState} from 'react';
 import { defaultUserSettings, UserSettings } from './models/User';
+import { use } from 'i18next';
 
 export type UserTheme = 'light' | 'dark' | 'system';
 export type Theme = 'light' | 'dark';
@@ -29,6 +30,7 @@ export const UserProvider = ({children}: UserProviderProps) => {
     const storedToken = localStorage.getItem('userToken');
     const token = storedToken ? storedToken : defaultUserSettings.token;
     const user_id = localStorage.getItem('user_id') || defaultUserSettings.user_id;
+    const role = localStorage.getItem('role') || defaultUserSettings.role;
     const domain = localStorage.getItem('userDomain') || defaultUserSettings.domain;
     const email = localStorage.getItem('userEmail') || defaultUserSettings.email;
     const name = localStorage.getItem('userName') || defaultUserSettings.name;
@@ -53,6 +55,7 @@ export const UserProvider = ({children}: UserProviderProps) => {
     return {
       token,
       user_id,
+      role,
       domain,
       email,
       name,
@@ -79,6 +82,14 @@ export const UserProvider = ({children}: UserProviderProps) => {
       mediaQuery.removeEventListener('change', mediaQueryChangeHandler);
     };
   }, []);
+
+  useEffect(() => {
+    if (userSettings.user_id === null || userSettings.user_id === '') {
+      localStorage.setItem('user_id', defaultUserSettings.role);
+    } else {
+      localStorage.setItem('user_id', userSettings.user_id);
+    }
+  }, [userSettings.role]);
 
   useEffect(() => {
     if (userSettings.token === undefined) {
