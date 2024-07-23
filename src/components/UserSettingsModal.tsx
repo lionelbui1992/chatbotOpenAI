@@ -12,12 +12,11 @@ import {Theme, UserContext} from '../UserContext';
 import ModelSelect from './ModelSelect';
 import {EditableField} from "./EditableField";
 import '../assets/styles/UserSettingsModal.css';
-import {GOOGLE_CLIENT_ID, GOOGLE_DEVELOPER_KEY, OPENAI_DEFAULT_SYSTEM_PROMPT} from "../config";
+import {GOOGLE_CLIENT_ID, GOOGLE_DEVELOPER_KEY} from "../config";
 import ConversationService from "../service/ConversationService";
 import {NotificationService} from "../service/NotificationService";
 import {useTranslation} from 'react-i18next';
 import {Transition} from '@headlessui/react';
-import EditableInstructions from './EditableInstructions';
 import {useConfirmDialog} from './ConfirmDialog';
 import {DEFAULT_MODEL} from "../constants/appConstants";
 import UserService from "../service/UserService"; // Add this line to import UserService
@@ -62,7 +61,6 @@ interface GoogleSheetDetail {
 
 enum Tab {
   GENERAL_TAB = "General",
-  INSTRUCTIONS_TAB = "Instructions",
   GOOGLE_TAB = "Google Connect",
   STORAGE_TAB = "Storage",
 }
@@ -370,12 +368,6 @@ const navigate = useNavigate();
                     <Cog6ToothIcon className="w-4 h-4 mr-3" aria-hidden="true"/>{t('general-tab')}
                   </div>
                   <div
-                      className={`cursor-pointer p-4 flex items-center ${activeTab === Tab.INSTRUCTIONS_TAB ? 'bg-gray-200 dark:bg-gray-700' : ''}`}
-                      onClick={() => setActiveTab(Tab.INSTRUCTIONS_TAB)}>
-                    <DocumentTextIcon className="w-4 h-4 mr-3"
-                                      aria-hidden="true"/>{t('instructions-tab')}
-                  </div>
-                  <div
                     className={`cursor-pointer p-4 flex items-center ${activeTab === Tab.GOOGLE_TAB ? 'bg-gray-200 dark:bg-gray-700' : ''}`} // Added new Tab
                     onClick={() => setActiveTab(Tab.GOOGLE_TAB)}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" viewBox="0 0 32 32" fill="none" className="w-4 h-4 mr-3">
@@ -443,21 +435,6 @@ const navigate = useNavigate();
                             }}
                         />
                       </div>
-                    </div>
-                  </div>
-                  <div
-                      className={`${activeTab === Tab.INSTRUCTIONS_TAB ? 'flex flex-col flex-1' : 'hidden'}`}>
-                    <div
-                        className="flex flex-col flex-1 border-b border-token-border-light pb-3 last-of-type:border-b-0">
-                      <EditableInstructions
-                          ref={editableInstructionsRef}
-                          initialValue={userSettings.instructions}
-                          placeholder={OPENAI_DEFAULT_SYSTEM_PROMPT}
-                          onChange={(text) => {
-                            // setUserSettings({...userSettings, instructions: text});
-                          }}
-                          className="flex flex-col h-full"
-                      />
                     </div>
                   </div>
                   <div className={`${activeTab === Tab.GOOGLE_TAB ? 'flex flex-col flex-1 google-tab' : 'hidden'}`}>
