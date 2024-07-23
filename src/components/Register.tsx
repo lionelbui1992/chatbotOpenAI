@@ -84,6 +84,9 @@ const Register: React.FC = () => {
             <option value="">Select your domain</option>
             <option value="domain-1">Doamin #001</option>
             <option value="domain-2">Doamin #002</option>
+            <option value="domain-3">Doamin #003</option>
+            <option value="domain-4">Doamin #004</option>
+            <option value="domain-5">Doamin #005</option>
           </select>
         </div>
       </div>
