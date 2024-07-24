@@ -198,7 +198,7 @@ const navigate = useNavigate();
         gapi.auth2.getAuthInstance().isSignedIn.listen(setIsSignedIn);
         setIsSignedIn(gapi.auth2.getAuthInstance().isSignedIn.get());
 
-        if (gapi.auth2.getAuthInstance().isSignedIn.get()) {
+        if (gapi.auth2.getAuthInstance().isSignedIn.get() && authToken !== gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token) {
           setAuthToken(gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token);
         }
       }).catch((error: Error) => {
@@ -260,12 +260,12 @@ const navigate = useNavigate();
   }, [isSignedIn]);
 
   useEffect(() => {
-    if (authToken) {
+    if (authToken && authToken !== userSettings.googleAccessToken) {
       setUserSettings({...userSettings, googleAccessToken: authToken});
       // update google access token in backend
       if (userSettings.token) {
         UserService.updateGoogleSettings(userSettings.token, authToken, selectedDetails, false)
-          .then((response) => {
+          .then((response: Response) => {
             if (response.status === 200) {
               setIsLoading(false);
             } else if (response.status === 401) {
@@ -309,6 +309,8 @@ const navigate = useNavigate();
           if (response.status === 200) {
             setIsLoading(false);
             NotificationService.handleSuccess("Google access token has been successfully updated.");
+            const instructions = response.data.instructions;
+            setUserSettings({...userSettings, instructions});
           } else if (response.status === 401) {
             navigate('/login');
           } else {
