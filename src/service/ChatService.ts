@@ -19,7 +19,7 @@ interface CompletionChunk {
 
 interface CompletionChunkChoice {
   index: number;
-  delta: {
+  message: {
     content: string;
   };
   finish_reason: null | string; // If there can be other values than 'null', use appropriate type instead of string.
@@ -217,8 +217,8 @@ export class ChatService {
           let accumulatedContet = '';
           chunks.forEach(chunk => {
             chunk.choices.forEach(choice => {
-              if (choice.delta && choice.delta.content) {  // Check if delta and content exist
-                const content = choice.delta.content;
+              if (choice.message && choice.message.content) {  // Check if message and content exist
+                const content = choice.message.content;
                 try {
                   accumulatedContet += content;
                 } catch (err) {
