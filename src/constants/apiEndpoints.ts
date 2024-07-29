@@ -6,3 +6,4 @@ export const USER_ENDPOINT = `${API_ENDPOINT}/v1/user`;
 export const TTS_ENDPOINT = `${API_ENDPOINT}/v1/audio/speech`;
 export const CHAT_COMPLETIONS_ENDPOINT = `${API_ENDPOINT}/v1/chat/completions`;
 export const MODELS_ENDPOINT = `${API_ENDPOINT}/v1/models`;
+export const DOMAIN_ENDPOINT = `${API_ENDPOINT}/v1/domain`;

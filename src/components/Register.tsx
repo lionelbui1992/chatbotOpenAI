@@ -3,9 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Auth from '../service/Auth';
 import { UserContext } from '../UserContext';
+import { DOMAIN_ENDPOINT } from '../constants/apiEndpoints';
 
 const Register: React.FC = () => {
   const [domain, setDomain] = useState<string>('');
+  const [domainList, setDomainList] = useState<string[]>([]);
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [rePassword, setRePassword] = useState<string>('');
@@ -18,6 +20,20 @@ const Register: React.FC = () => {
   useEffect(() => {
     // clear token in context
     setUserSettings({...userSettings, token: undefined});
+    // call get domain api
+    const getDomainList = async () => {
+      try {
+        const domain = await fetch(DOMAIN_ENDPOINT);
+        const domainData = await domain.json();
+        console.log(domainData);
+        if (domainData && domainData.status === 'success' && domainData.data.length > 0) {
+          setDomainList(domainData.data);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    getDomainList();
    }, []);
 
   useEffect(() => {
@@ -82,11 +98,9 @@ const Register: React.FC = () => {
             onChange={(e) => setDomain(e.target.value)}
           >
             <option value="">Select your domain</option>
-            <option value="domain-1">Doamin #001</option>
-            <option value="domain-2">Doamin #002</option>
-            <option value="domain-3">Doamin #003</option>
-            <option value="domain-4">Doamin #004</option>
-            <option value="domain-5">Doamin #005</option>
+            {domainList.map((domain:any, index) => (
+              <option key={domain.name + index} value={domain.name}>{domain.label}</option>
+            ))}
           </select>
         </div>
       </div>

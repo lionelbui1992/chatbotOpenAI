@@ -218,14 +218,21 @@ export class ChatService {
           chunks.forEach(chunk => {
             chunk.choices.forEach(choice => {
               if (choice.message && choice.message.content) {  // Check if message and content exist
-                const content = choice.message.content;
+                // fill content if is JSON format
                 try {
+                  const content = JSON.parse(choice.message.content).message;
                   accumulatedContet += content;
                 } catch (err) {
-                  if (err instanceof Error) {
-                    console.error(err.message);
+                  // if not JSON format, just append the content
+                  const content = choice.message.content;
+                  try {
+                    accumulatedContet += content;
+                  } catch (err) {
+                    if (err instanceof Error) {
+                      console.error(err.message);
+                    }
+                    console.log('error in client. continuing...')
                   }
-                  console.log('error in client. continuing...')
                 }
               } else if (choice?.finish_reason === 'stop') {
                 // done
