@@ -18,6 +18,7 @@ const ChatBlock: React.FC<Props> = ({block, loading, isLastBlock}) => {
   const contentRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [savedHeight, setSavedHeight] = useState<string | null>(null);
+  const [blockContent, setBlockContent] = useState(block.content);
 
   const errorStyles = block.messageType === MessageType.Error ? {
     backgroundColor: '#F5E6E6',
@@ -35,6 +36,13 @@ const ChatBlock: React.FC<Props> = ({block, loading, isLastBlock}) => {
     }
   }, [isEdit]);
 
+  useEffect(() => {
+    try {
+      const blockJSON = JSON.parse(block.content);
+      setBlockContent(blockJSON.message)
+    } catch (e) {}
+  }, [block.content]);
+
 
   const handleRegenerate = () => {
   }
@@ -44,7 +52,7 @@ const ChatBlock: React.FC<Props> = ({block, loading, isLastBlock}) => {
       setSavedHeight(`${contentRef.current.offsetHeight}px`);
     }
     setIsEdit(true);
-    setEditedBlockContent(block.content);
+    setEditedBlockContent(blockContent);
   }
   const handleEditSave = () => {
     // todo: notify main to change content block
@@ -109,9 +117,9 @@ const ChatBlock: React.FC<Props> = ({block, loading, isLastBlock}) => {
                           <div ref={contentRef}
                                className="markdown prose w-full break-words dark:prose-invert light">
                             {block.role === 'user' ? (
-                                <UserContentBlock text={block.content} fileDataRef={(block.fileDataRef) ? block.fileDataRef : []}/>
+                                <UserContentBlock text={blockContent} fileDataRef={(block.fileDataRef) ? block.fileDataRef : []}/>
                             ) : (
-                                <MarkdownBlock markdown={block.content} role={block.role}
+                                <MarkdownBlock markdown={blockContent} role={block.role}
                                                loading={loading}/>
                             )}
                           </div>)}
@@ -123,10 +131,10 @@ const ChatBlock: React.FC<Props> = ({block, loading, isLastBlock}) => {
           {!(isLastBlock && loading) && (
               <div id={`action-block-${block.id}`} className="flex justify-start items-center ml-10">
                 {block.role === 'assistant' && (
-                    <TextToSpeechButton content={block.content}/>
+                    <TextToSpeechButton content={blockContent}/>
                 )}
                 <div className="copy-button">
-                  <CopyButton mode={CopyButtonMode.Compact} text={block.content}/>
+                  <CopyButton mode={CopyButtonMode.Compact} text={blockContent}/>
                 </div>
                 {/*          {block.role === 'assistant' && (
                     <div className="regenerate-button text-gray-400 visible">
