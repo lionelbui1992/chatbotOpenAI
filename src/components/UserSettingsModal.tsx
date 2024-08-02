@@ -228,6 +228,10 @@ const navigate = useNavigate();
     // clear all storage and navigate to login page
     setUserSettings(defaultUserSettings);
     onClose();
+    // clear hístory
+    try {
+      ConversationService.deleteAllConversations();
+    } catch (error) {}
     navigate('/login')
   }
 
