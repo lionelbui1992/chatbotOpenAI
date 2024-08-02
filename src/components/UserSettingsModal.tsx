@@ -2,7 +2,6 @@ import React, {useContext, useEffect, useRef, useState} from 'react';
 import {
   CircleStackIcon,
   Cog6ToothIcon,
-  DocumentTextIcon,
   XMarkIcon,
   ArrowLeftOnRectangleIcon,
   ChevronLeftIcon, 
@@ -88,12 +87,11 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({isVisible, onClose
   const [selectedSheetId, setSelectedSheetId] = useState('');
   const [selectedSheetName, setSelectedSheetName] = useState('');
   const [sheetDetails, setSheetDetails] = useState([]);
-  const [selectedDetails, setSelectedDetails] = useState<GoogleSelectedDetails[]>([]);
+  const [selectedDetails, setSelectedDetails] = useState<GoogleSelectedDetails[]>(userSettings.googleSelectedDetails);
   const [authToken, setAuthToken] = useState(userSettings.googleAccessToken);
-  const [sellectedDriveInfo,setSelectedDriveInfo] = useState(userSettings.googleSelectedDetails);
+  const [sellectedDriveInfo, setSelectedDriveInfo] = useState(userSettings.googleSelectedDetails);
   const [isLoading,setIsLoading] = useState(false);
   const [showBar,setShowBar] = useState(false)
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
 const navigate = useNavigate();
 
@@ -181,7 +179,7 @@ const navigate = useNavigate();
     } else {
       console.log('Storage Estimation API is not supported in this browser.');
     }
-    function start() {
+    function init_google_auth() {
       gapi.client.init({
         apiKey: GOOGLE_DEVELOPER_KEY,
         clientId: GOOGLE_CLIENT_ID,
@@ -200,13 +198,20 @@ const navigate = useNavigate();
 
         if (gapi.auth2.getAuthInstance().isSignedIn.get() && authToken !== gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token) {
           setAuthToken(gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token);
+          console.log('Google Auth Token:', gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse());
         }
+        if (gapi.auth2.getAuthInstance().isSignedIn.get() && gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token) {} else if (userSettings.googleAccessToken) {
+          gapi.client.setToken({access_token: userSettings.googleAccessToken});
+          setIsSignedIn(true);
+
+        }
+        console.log('meme');
       }).catch((error: Error) => {
         console.error('Error initializing gapi client:', error);
       });
     }
 
-    gapi.load('client:auth2', start);
+    gapi.load('client:auth2', init_google_auth);
   }, []);
 
 
@@ -214,6 +219,7 @@ const navigate = useNavigate();
     gapi.auth2.getAuthInstance().signIn().then(() => {
       console.log(gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token);
       setAuthToken(gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token);
+      console.log('Google Auth Token:', gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse());
       setIsSignedIn(true);
     });
   };
@@ -291,15 +297,14 @@ const navigate = useNavigate();
   const handleSheetClick = (sheetId: string, sheetName: string) => {
     setSelectedSheetId(sheetId);
     setSelectedSheetName(sheetName);
+    // clear selected details
+    setSelectedDetails([]);
     listSheetDetails(sheetId ?? "");
   };
 
   const handleDetailClick = (detail: GoogleSheetInfo2) => {
-    setSelectedDetails((prevDetails) =>
-      prevDetails.some(d => d.id === detail.id)
-        ? prevDetails.filter(d => d.id !== detail.id)
-        : [...prevDetails, { ...detail, sheetName: selectedSheetName, sheetId: selectedSheetId }]
-    );
+    // only keep one detail selected at a time
+    setSelectedDetails([{...detail, sheetName: selectedSheetName, sheetId: selectedSheetId}]);
   };
 
   const handleSaveGoogleInfo = () => {
@@ -472,7 +477,7 @@ const navigate = useNavigate();
                               {filteredSheets.map((sheet: GoogleSheetInfo) => (
                                 <li 
                                 key={sheet.id} onClick={() => handleSheetClick(sheet.id, sheet.name)}
-                                className={sheet?.id === sellectedDriveInfo[0]?.sheetId ? 'selected' : ''}
+                                className={(sheet?.id === sellectedDriveInfo[0]?.sheetId || sheet?.id === selectedSheetId) ? 'selected cursor-pointer' : 'cursor-pointer'}
                                 >
                                   {sheet.name}
                                 </li>
@@ -491,7 +496,7 @@ const navigate = useNavigate();
                                         textDecoration: selectedDetails.some(d => d.id === detail.id) ? 'underline' : 'none',
                                         color: selectedDetails.some(d => d.id === detail.id) ? 'blue' : 'black'
                                       }}
-                                      className={selectedDetails.some(d => d.id === detail.id) ? 'google-sheet-selected' : ''}
+                                      className={selectedDetails.some(d => d.id === detail.id) ? 'google-sheet-selected cursor-pointer' : 'cursor-pointer'}
                                     >
                                       {index + 1}. {detail.title}
                                     </li>
