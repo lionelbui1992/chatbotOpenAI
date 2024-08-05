@@ -85,7 +85,7 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div class="login-container">
+    <div className="login-container">
     <form className="w-full max-w-xs" onSubmit={handleRegister}>
       <div className="mb-4"></div>
       <div className="md:flex md:items-center mb-3">
