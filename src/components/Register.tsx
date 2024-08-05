@@ -85,11 +85,12 @@ const Register: React.FC = () => {
   };
 
   return (
+    <div class="login-container">
     <form className="w-full max-w-xs" onSubmit={handleRegister}>
       <div className="mb-4"></div>
       <div className="md:flex md:items-center mb-3">
         <div className="md:w-1/3">
-          <label className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" htmlFor="user-domain">Domain</label>
+          <label className="block text-gray-500 font-bold md:text-left mb-1 md:mb-0 pr-4" htmlFor="user-domain">Domain</label>
         </div>
         <div className="md:w-2/3">
           <select
@@ -106,7 +107,7 @@ const Register: React.FC = () => {
       </div>
       <div className="md:flex md:items-center mb-3">
         <div className="md:w-1/3">
-          <label className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" htmlFor="user-email">Email</label>
+          <label className="block text-gray-500 font-bold md:text-left mb-1 md:mb-0 pr-4" htmlFor="user-email">Email</label>
         </div>
         <div className="md:w-2/3">
           <input
@@ -121,7 +122,7 @@ const Register: React.FC = () => {
       </div>
       <div className="md:flex md:items-center mb-3">
         <div className="md:w-1/3">
-          <label className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" htmlFor="user-password">Password</label>
+          <label className="block text-gray-500 font-bold md:text-left mb-1 md:mb-0 pr-4" htmlFor="user-password">Password</label>
         </div>
         <div className="md:w-2/3">
           <input
@@ -136,7 +137,7 @@ const Register: React.FC = () => {
       </div>
       <div className="md:flex md:items-center mb-3">
         <div className="md:w-1/3">
-          <label className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" htmlFor="user-re-password">Re-Password</label>
+          <label className="block text-gray-500 font-bold md:text-left mb-1 md:mb-0 pr-4" htmlFor="user-re-password">Re-Password</label>
         </div>
         <div className="md:w-2/3">
           <input
@@ -168,6 +169,7 @@ const Register: React.FC = () => {
         </div>
       </div>
     </form>
+    </div>
   );
 };
 
