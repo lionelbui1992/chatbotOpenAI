@@ -98,6 +98,7 @@ const navigate = useNavigate();
   useEffect(()=>{
     if(Array(sellectedDriveInfo)){
       handleSheetClick(sellectedDriveInfo[0]?.sheetId,sellectedDriveInfo[0]?.sheetName);
+      listSheetDetails(sellectedDriveInfo[0]?.sheetId);
       setSelectedDetails(sellectedDriveInfo)
     }
   },[sellectedDriveInfo])
@@ -247,8 +248,13 @@ const navigate = useNavigate();
       'fields': 'files(id, name)',
     }).then((response: any) => {
       setSheets(response.result.files);
-    }).catch((error: Error) => {
+    }).catch((error: any) => {
       console.error('Error listing sheets:', error);
+      if (typeof(error.status) !== 'undefined' && error.status === 401) {
+        gapi.auth2.getAuthInstance().signOut();
+        setIsSignedIn(false);
+        // setAuthToken('');
+      }
     });
   };
 
