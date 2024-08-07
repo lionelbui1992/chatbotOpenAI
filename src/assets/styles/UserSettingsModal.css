@@ -7,6 +7,9 @@
 .setting-panel:last-child {
   border-bottom: none;
 }
+.setting-panel button svg {
+  display: inline-block;
+}
 .svg-color-1 {
   fill:#12B347;
 }

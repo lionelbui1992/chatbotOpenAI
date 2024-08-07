@@ -23,6 +23,7 @@ import UserService from "../service/UserService"; // Add this line to import Use
 import { gapi } from 'gapi-script';
 import { defaultUserSettings, GoogleSelectedDetails } from '../models/User';
 import { useNavigate } from 'react-router-dom';
+import { RotatingLines } from 'react-loader-spinner';
 
 interface UserSettingsModalProps {
   isVisible: boolean;
@@ -314,8 +315,9 @@ const navigate = useNavigate();
   };
 
   const handleSaveGoogleInfo = () => {
+    setIsLoading(true);
     // update user settings in context
-    onClose();
+    // onClose();
     setUserSettings({...userSettings, googleAccessToken: authToken, googleSelectedDetails: selectedDetails});
     // update google access token in backend
     if (userSettings.token) {
@@ -326,6 +328,7 @@ const navigate = useNavigate();
             NotificationService.handleSuccess("Google access token has been successfully updated.");
             const instructions = response.data.instructions;
             setUserSettings({...userSettings, instructions});
+            onClose();
           } else if (response.status === 401) {
             navigate('/login');
           } else {
@@ -462,7 +465,13 @@ const navigate = useNavigate();
                         {isSignedIn ? (
                           <div className="google-button-setting">
                             <button onClick={handleSignOutClick} className="py-2 px-4 bg-red-500 text-white rounded hover:bg-red-700">Sign Out</button>
-                            <button onClick={handleSaveGoogleInfo} className="rounded-md border dark:border-white/20 py-2 px-4">Save</button>
+                            <button onClick={handleSaveGoogleInfo} className="rounded-md border dark:border-white/20 py-2 px-4">Save {isLoading && (
+                              <RotatingLines
+                                ariaLabel="loading-indicator"
+                                width="16"
+                                strokeWidth="1"
+                                strokeColor="black"
+                              />)}</button>
                           </div>
                         ) : (
                           <button onClick={handleSignInClick}>Sign In</button>
