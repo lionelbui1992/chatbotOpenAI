@@ -97,7 +97,7 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({isVisible, onClose
 const navigate = useNavigate();
 
   useEffect(()=>{
-    if(Array(sellectedDriveInfo)){
+    if(sellectedDriveInfo && Array(sellectedDriveInfo) && sellectedDriveInfo.length > 0){
       handleSheetClick(sellectedDriveInfo[0]?.sheetId,sellectedDriveInfo[0]?.sheetName);
       listSheetDetails(sellectedDriveInfo[0]?.sheetId);
       setSelectedDetails(sellectedDriveInfo)
@@ -200,14 +200,12 @@ const navigate = useNavigate();
 
         if (gapi.auth2.getAuthInstance().isSignedIn.get() && authToken !== gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token) {
           setAuthToken(gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token);
-          console.log('Google Auth Token:', gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse());
         }
         if (gapi.auth2.getAuthInstance().isSignedIn.get() && gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token) {} else if (userSettings.googleAccessToken) {
           gapi.client.setToken({access_token: userSettings.googleAccessToken});
           setIsSignedIn(true);
 
         }
-        console.log('meme');
       }).catch((error: Error) => {
         console.error('Error initializing gapi client:', error);
       });
@@ -221,7 +219,6 @@ const navigate = useNavigate();
     gapi.auth2.getAuthInstance().signIn().then(() => {
       console.log(gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token);
       setAuthToken(gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token);
-      console.log('Google Auth Token:', gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse());
       setIsSignedIn(true);
     });
   };
@@ -279,22 +276,22 @@ const navigate = useNavigate();
   useEffect(() => {
     if (authToken && authToken !== userSettings.googleAccessToken) {
       setUserSettings({...userSettings, googleAccessToken: authToken});
-      // update google access token in backend
-      if (userSettings.token) {
-        UserService.updateGoogleSettings(userSettings.token, authToken, selectedDetails, false)
+      // update google access access_token in backend
+      if (userSettings.access_token) {
+        UserService.updateGoogleSettings(userSettings.access_token, authToken, selectedDetails, false)
           .then((response: Response) => {
             if (response.status === 200) {
               setIsLoading(false);
             } else if (response.status === 401) {
               navigate('/login');
             } else {
-              NotificationService.handleUnexpectedError(new Error('An unknown error occurred'), "Failed to update google access token");
+              NotificationService.handleUnexpectedError(new Error('An unknown error occurred'), "Failed to update google access access_token");
             }
           }).catch((error) => {
             if (error instanceof Error) {
-              NotificationService.handleUnexpectedError(error, "Failed to update google access token");
+              NotificationService.handleUnexpectedError(error, "Failed to update google access access_token");
             } else {
-              NotificationService.handleUnexpectedError(new Error('An unknown error occurred'), "Failed to update google access token");
+              NotificationService.handleUnexpectedError(new Error('An unknown error occurred'), "Failed to update google access access_token");
             }
         });
       }
@@ -319,26 +316,26 @@ const navigate = useNavigate();
     // update user settings in context
     // onClose();
     setUserSettings({...userSettings, googleAccessToken: authToken, googleSelectedDetails: selectedDetails});
-    // update google access token in backend
-    if (userSettings.token) {
-      UserService.updateGoogleSettings(userSettings.token, authToken, selectedDetails, true)
+    // update google access access_token in backend
+    if (userSettings.access_token) {
+      UserService.updateGoogleSettings(userSettings.access_token, authToken, selectedDetails, true)
         .then((response) => {
           if (response.status === 200) {
             setIsLoading(false);
-            NotificationService.handleSuccess("Google access token has been successfully updated.");
+            NotificationService.handleSuccess("Google access access_token has been successfully updated.");
             const instructions = response.data.instructions;
             setUserSettings({...userSettings, instructions});
             onClose();
           } else if (response.status === 401) {
             navigate('/login');
           } else {
-            NotificationService.handleUnexpectedError(new Error('An unknown error occurred'), "Failed to update google access token");
+            NotificationService.handleUnexpectedError(new Error('An unknown error occurred'), "Failed to update google access access_token");
           }
         }).catch((error) => {
           if (error instanceof Error) {
-            NotificationService.handleUnexpectedError(error, "Failed to update google access token");
+            NotificationService.handleUnexpectedError(error, "Failed to update google access access_token");
           } else {
-            NotificationService.handleUnexpectedError(new Error('An unknown error occurred'), "Failed to update google access token");
+            NotificationService.handleUnexpectedError(new Error('An unknown error occurred'), "Failed to update google access access_token");
           }
       });
     }
@@ -415,7 +412,7 @@ const navigate = useNavigate();
                 </div>
                 <div className="flex-1 p-4 flex flex-col tab-content">
                   <div className={`${activeTab === Tab.GENERAL_TAB ? 'flex flex-col flex-1' : 'hidden'}`}>
-                    <div className="border-b border-token-border-light pb-3 last-of-type:border-b-0">
+                    <div className="border-b border-access_token-border-light pb-3 last-of-type:border-b-0">
                       <div className="flex items-center justify-between setting-panel flex-wrap">
                         <label htmlFor="theme">{t('theme-label')}</label>
                         <select id='theme' name='theme'

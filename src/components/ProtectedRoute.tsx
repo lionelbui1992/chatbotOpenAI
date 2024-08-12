@@ -5,7 +5,7 @@ import { UserContext } from '../UserContext';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { userSettings } = useContext(UserContext);
-  const isAuthenticated = userSettings?.token;
+  const isAuthenticated = userSettings?.access_token ? true : false;
 
   return isAuthenticated ? children : <Navigate to="/login" />;
 };

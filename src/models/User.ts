@@ -6,7 +6,6 @@ class User {
     domain: string;
     email: string;
     name: string;
-    token: string;
     settings: UserSettings;
 
     constructor(
@@ -15,7 +14,6 @@ class User {
         domain: string,
         email: string,
         name: string,
-        token: string,
         settings: UserSettings
     ) {
         this.id = id;
@@ -23,7 +21,6 @@ class User {
         this.domain = domain;
         this.email = email;
         this.name = name;
-        this.token = token;
         this.settings = settings;
     }
 }
@@ -36,7 +33,8 @@ interface GoogleSelectedDetails {
 }
 
 interface UserSettings {
-    token?: string;
+    access_token?: string;
+    refresh_token?: string;
     user_id: string | null;
     role: string;
     domain: string;
@@ -55,7 +53,8 @@ interface UserSettings {
 }
 
 const defaultUserSettings: UserSettings = {
-    token: undefined,
+    access_token: undefined,
+    refresh_token: undefined,
     user_id: null,
     role: 'user',
     domain: '',

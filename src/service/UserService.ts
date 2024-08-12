@@ -21,7 +21,7 @@ class UserService {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${userSettings.token}`,
+                'Authorization': `Bearer ${userSettings.access_token}`,
             },
             body: JSON.stringify(userSettings),
         });

@@ -62,7 +62,7 @@ const App = () => {
             <ToastContainer/>
             <div className="flex overflow-hidden w-full h-full relative z-0">
               {
-                userSettings.token ? (
+                userSettings.access_token ? (
                   <Sidebar
                   className="sidebar-container flex-shrink-0"
                   isSidebarCollapsed={isSidebarCollapsed}

@@ -27,8 +27,9 @@ interface UserProviderProps {
 
 export const UserProvider = ({children}: UserProviderProps) => {
   const [userSettings, setUserSettings] = useState<UserSettings>(() => {
-    const storedToken = localStorage.getItem('userToken');
-    const token = storedToken ? storedToken : defaultUserSettings.token;
+   const access_token = localStorage.getItem('access_token') || defaultUserSettings.access_token;
+   const refresh_token = localStorage.getItem('refresh_token') || defaultUserSettings.refresh_token;
+
     const user_id = localStorage.getItem('user_id') || defaultUserSettings.user_id;
     const role = localStorage.getItem('role') || defaultUserSettings.role;
     const domain = localStorage.getItem('userDomain') || defaultUserSettings.domain;
@@ -53,7 +54,8 @@ export const UserProvider = ({children}: UserProviderProps) => {
     const tags = localStorage.getItem('tag')?.split(',') || defaultUserSettings.tags;
 
     return {
-      token,
+      access_token,
+      refresh_token,
       user_id,
       role,
       domain,
@@ -78,6 +80,18 @@ export const UserProvider = ({children}: UserProviderProps) => {
     mediaQuery.addEventListener('change', mediaQueryChangeHandler);
     updateTheme();
 
+    // load user token if available
+    const access_token = localStorage.getItem('access_token') || defaultUserSettings.access_token;
+    const refresh_token = localStorage.getItem('refresh_token') || defaultUserSettings.refresh_token;
+
+    if (access_token !== defaultUserSettings.access_token) {
+      setUserSettings(prevSettings => ({...prevSettings, access_token}));
+    }
+
+    if (refresh_token !== defaultUserSettings.refresh_token) {
+      setUserSettings(prevSettings => ({...prevSettings, refresh_token}));
+    }
+
     return () => {
       mediaQuery.removeEventListener('change', mediaQueryChangeHandler);
     };
@@ -92,12 +106,20 @@ export const UserProvider = ({children}: UserProviderProps) => {
   }, [userSettings.role]);
 
   useEffect(() => {
-    if (userSettings.token === undefined) {
-      localStorage.removeItem('userToken');
+    if (userSettings.access_token === undefined) {
+      localStorage.removeItem('access_token');
     } else {
-      localStorage.setItem('userToken', userSettings.token);
+      localStorage.setItem('access_token', userSettings.access_token);
     }
-  } , [userSettings.token]);
+  } , [userSettings.access_token]);
+
+  useEffect(() => {
+    if (userSettings.refresh_token === undefined) {
+      localStorage.removeItem('refresh_token');
+    } else {
+      localStorage.setItem('refresh_token', userSettings.refresh_token);
+    }
+  } , [userSettings.refresh_token]);
 
   useEffect(() => {
     localStorage.setItem('theme', userSettings.userTheme);

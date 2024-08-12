@@ -15,7 +15,7 @@ const Login = () => {
 
   useEffect(() => {
    // clear token in context
-   setUserSettings({...userSettings, token: undefined});
+   setUserSettings({...userSettings, access_token: undefined});
   }, []);
 
   const handleLogin = async (e: FormEvent) => {
@@ -30,7 +30,8 @@ const Login = () => {
       // update token to context
       setUserSettings({
         ...userSettings,
-        token: user.token,
+        access_token: user.settings.access_token,
+        refresh_token: user.settings.refresh_token,
         user_id: user.id,
         domain: user.domain,
         email: user.email,
